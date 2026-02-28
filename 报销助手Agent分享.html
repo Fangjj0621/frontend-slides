@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>告别贴票噩梦 —— 智能报销助手Agent</title>
+
+    <!-- Google Fonts: Syne (display) + Space Mono (mono/labels) + Noto Sans SC (CJK body) -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Mono:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============================================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           Every slide MUST fit exactly in the viewport — no scrolling.
+           ============================================================ */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* ============================================================
+           DESIGN TOKENS
+           Modify these variables to change the entire presentation.
+           Style: Dark Tech — Inspired by "Neon Cyber" preset.
+           Colors: Deep navy bg, cyan accent, amber highlight.
+           ============================================================ */
+        :root {
+            /* Color palette */
+            --bg-primary:    #080d18;
+            --bg-card:       rgba(255, 255, 255, 0.04);
+            --border:        rgba(255, 255, 255, 0.08);
+            --border-cyan:   rgba(0, 212, 255, 0.25);
+            --border-amber:  rgba(255, 184, 0,  0.25);
+            --border-green:  rgba(0, 230, 118, 0.3);
+            --border-red:    rgba(255, 71,  87,  0.25);
+
+            --text-primary:  #eef2ff;
+            --text-secondary:#6b7fa3;
+            --text-muted:    #3d4f6e;
+
+            --accent-cyan:   #00d4ff;
+            --accent-amber:  #ffb800;
+            --accent-green:  #00e676;
+            --accent-red:    #ff4757;
+
+            /* Fonts */
+            --font-display: 'Syne', sans-serif;
+            --font-body:    'Noto Sans SC', sans-serif;
+            --font-mono:    'Space Mono', monospace;
+
+            /* Typography — ALL use clamp() for responsive scaling */
+            --title-size:   clamp(2rem,   5.5vw, 4.2rem);
+            --h2-size:      clamp(1.4rem, 3.8vw, 2.6rem);
+            --h3-size:      clamp(1rem,   2.5vw, 1.6rem);
+            --body-size:    clamp(0.8rem,  1.5vw, 1.05rem);
+            --small-size:   clamp(0.7rem,  1.2vw, 0.88rem);
+            --xs-size:      clamp(0.6rem,  0.95vw, 0.75rem);
+
+            /* Spacing — clamp() for responsive scaling */
+            --slide-padding: clamp(1.5rem, 4.5vw, 4.5rem);
+            --content-gap:   clamp(0.6rem, 1.8vw, 1.6rem);
+            --elem-gap:      clamp(0.3rem, 0.8vw, 0.65rem);
+
+            /* Animation */
+            --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --dur:       0.65s;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           SLIDE CONTAINER — Each slide = exactly one viewport height
+           ============================================================ */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;        /* Dynamic viewport for mobile browsers */
+            overflow: hidden;      /* CRITICAL: Never let content escape */
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding: var(--slide-padding);
+        }
+
+        /* Slides where content starts from top (quiz slides) */
+        .slide-top { justify-content: flex-start; }
+
+        /* ============================================================
+           BACKGROUND DECORATIONS
+           ============================================================ */
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+            background-size: 52px 52px;
+        }
+
+        /* Floating ambient glow — purely decorative */
+        .glow-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* ============================================================
+           RESPONSIVE BREAKPOINTS — Height-based (most critical)
+           ============================================================ */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem,   3.2vw, 2.5rem);
+                --content-gap:   clamp(0.4rem, 1.4vw, 1rem);
+                --title-size:    clamp(1.5rem, 4.5vw, 2.8rem);
+                --h2-size:       clamp(1.15rem, 3.2vw, 2rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.8rem, 2.5vw, 1.5rem);
+                --content-gap:   clamp(0.3rem, 1vw,   0.7rem);
+                --title-size:    clamp(1.2rem, 4vw,   2rem);
+                --body-size:     clamp(0.65rem,1.2vw,  0.9rem);
+            }
+            .nav-dots, .keyboard-hint, .decorative { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2vw, 1rem);
+                --title-size:    clamp(1rem, 3.5vw, 1.5rem);
+                --body-size:     clamp(0.6rem, 1vw, 0.8rem);
+            }
+        }
+
+        /* Narrow screens */
+        @media (max-width: 768px) {
+            .hide-mobile { display: none !important; }
+        }
+
+        /* Respect reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ============================================================
+           PROGRESS BAR
+           ============================================================ */
+        #progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-amber));
+            z-index: 9999;
+            transition: width 0.35s var(--ease-expo);
+        }
+
+        /* ============================================================
+           NAV DOTS
+           ============================================================ */
+        #nav-dots {
+            position: fixed;
+            right: clamp(0.75rem, 1.8vw, 1.4rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(5px, 0.9vh, 9px);
+            z-index: 9999;
+        }
+
+        .nav-dot {
+            width:  clamp(6px, 0.9vw, 8px);
+            height: clamp(6px, 0.9vw, 8px);
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 0;
+        }
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            transform: scale(1.35);
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+        .nav-dot:hover:not(.active) { background: rgba(255,255,255,0.45); }
+
+        /* ============================================================
+           SLIDE COUNTER
+           ============================================================ */
+        #slide-counter {
+            position: fixed;
+            bottom: clamp(0.75rem, 1.8vh, 1.4rem);
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--text-muted);
+            z-index: 9999;
+            letter-spacing: 0.12em;
+        }
+
+        /* ============================================================
+           ENTRANCE ANIMATIONS
+           Elements get .visible class when slide enters viewport
+           ============================================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity var(--dur) var(--ease-expo),
+                        transform var(--dur) var(--ease-expo);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-28px);
+            transition: opacity var(--dur) var(--ease-expo),
+                        transform var(--dur) var(--ease-expo);
+        }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(28px);
+            transition: opacity var(--dur) var(--ease-expo),
+                        transform var(--dur) var(--ease-expo);
+        }
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity var(--dur) var(--ease-expo),
+                        transform var(--dur) var(--ease-expo);
+        }
+        .slide.visible .reveal,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-right,
+        .slide.visible .reveal-scale { opacity: 1; transform: none; }
+
+        /* Stagger delays */
+        .d1 { transition-delay: 0.05s; }
+        .d2 { transition-delay: 0.15s; }
+        .d3 { transition-delay: 0.25s; }
+        .d4 { transition-delay: 0.35s; }
+        .d5 { transition-delay: 0.45s; }
+        .d6 { transition-delay: 0.55s; }
+        .d7 { transition-delay: 0.65s; }
+        .d8 { transition-delay: 0.75s; }
+
+        /* ============================================================
+           SHARED COMPONENTS
+           ============================================================ */
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45em;
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--accent-cyan);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: var(--elem-gap);
+        }
+        .section-badge::before {
+            content: '';
+            display: inline-block;
+            width: 1em; height: 2px;
+            background: var(--accent-cyan);
+            flex-shrink: 0;
+        }
+
+        .slide-h2 {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+
+        /* ============================================================
+           SLIDE 1 — COVER
+           ============================================================ */
+        #s1 { background: var(--bg-primary); }
+
+        /* Glow blobs */
+        #s1 .blob1 {
+            width:  min(55vw, 480px);
+            height: min(55vw, 480px);
+            background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%);
+            top: -18%; right: -8%;
+        }
+        #s1 .blob2 {
+            width:  min(38vw, 320px);
+            height: min(38vw, 320px);
+            background: radial-gradient(circle, rgba(255,184,0,0.07) 0%, transparent 70%);
+            bottom: -14%; left: 2%;
+        }
+
+        .cover-inner {
+            max-width: min(68vw, 820px);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 1.2vh, 0.9rem);
+        }
+
+        .cover-tag {
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--accent-cyan);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .cover-tag::before {
+            content: '';
+            display: inline-block;
+            width: 22px; height: 2px;
+            background: var(--accent-cyan);
+        }
+
+        .cover-title {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 800;
+            line-height: 1.18;
+            color: var(--text-primary);
+        }
+        .cover-title em {
+            font-style: normal;
+            color: var(--accent-cyan);
+        }
+
+        .cover-sub {
+            font-size: var(--h3-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .cover-divider {
+            width: clamp(36px, 7vw, 72px);
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), transparent);
+        }
+
+        .cover-author {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+        }
+        .cover-author span { color: var(--accent-amber); }
+
+        /* Right-side decorative receipt stack */
+        .cover-deco {
+            position: absolute;
+            right: var(--slide-padding);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+        .receipt {
+            width: clamp(90px, 18vw, 165px);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 8px;
+            padding: clamp(0.5rem, 1.3vw, 0.75rem);
+        }
+        .receipt.r1 { transform: rotate(-4deg); }
+        .receipt.r2 { transform: rotate(3deg);  }
+        .rline {
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.15);
+            margin-bottom: 5px;
+        }
+        .rline.w-full   { width: 100%; }
+        .rline.w-80     { width: 80%;  }
+        .rline.w-55     { width: 55%;  }
+        .rline.amber    { background: rgba(255,184,0,0.45); }
+        .ai-circle {
+            width:  clamp(56px, 11vw, 92px);
+            height: clamp(56px, 11vw, 92px);
+            background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(0,212,255,0.04));
+            border: 1px solid rgba(0,212,255,0.28);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+        }
+
+        @media (max-width: 900px) {
+            .cover-deco { display: none; }
+            .cover-inner { max-width: 100%; }
+        }
+
+        /* ============================================================
+           SLIDE 2 — 灵魂拷问
+           ============================================================ */
+        #s2 { background: var(--bg-primary); }
+
+        .q-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            gap: var(--content-gap);
+        }
+
+        .big-q {
+            font-family: var(--font-display);
+            font-size: clamp(1.6rem, 4.8vw, 3.8rem);
+            font-weight: 800;
+            line-height: 1.4;
+            color: var(--text-primary);
+            max-width: min(78vw, 820px);
+        }
+        .big-q .hl-cyan  { color: var(--accent-cyan); }
+
+        .sub-q {
+            font-size: var(--h3-size);
+            color: var(--text-secondary);
+            max-width: min(65vw, 660px);
+            line-height: 1.65;
+        }
+        .sub-q .hl-amber { color: var(--accent-amber); }
+
+        @keyframes float-up-down {
+            0%, 100% { transform: translateY(0);    }
+            50%       { transform: translateY(-10px); }
+        }
+        .emoji-float { animation: float-up-down 2.2s ease-in-out infinite; font-size: clamp(2.5rem, 6vw, 5rem); }
+
+        /* ============================================================
+           SLIDE 3 — 血泪史 · 3 Pain Points
+           ============================================================ */
+        #s3 { background: var(--bg-primary); }
+
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.5rem, 1.5vw, 1.1rem);
+            margin-top: var(--content-gap);
+        }
+        @media (max-width: 768px) { .pain-grid { grid-template-columns: 1fr; } }
+
+        .pain-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: clamp(0.75rem, 1.8vw, 1.4rem);
+            transition: border-color 0.3s ease;
+        }
+        .pain-card:hover { border-color: var(--border-amber); }
+
+        .pain-icon { font-size: clamp(1.5rem, 3vw, 2.4rem); margin-bottom: clamp(0.35rem, 0.8vh, 0.6rem); }
+
+        .pain-title {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 700;
+            color: var(--accent-amber);
+            margin-bottom: clamp(0.25rem, 0.6vh, 0.45rem);
+        }
+
+        .pain-desc {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+
+        /* ============================================================
+           QUIZ SLIDES (4 / 5 / 6) — Shared Styles
+           ============================================================ */
+        .slide-quiz {
+            background: var(--bg-primary);
+            /* Override: start content from top */
+            justify-content: flex-start;
+        }
+
+        /* Inner flex column filling the padded area */
+        .quiz-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: var(--elem-gap);
+        }
+
+        .quiz-header {
+            display: flex;
+            align-items: center;
+            gap: var(--content-gap);
+            flex-shrink: 0;
+        }
+
+        .quiz-badge {
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--accent-cyan);
+            background: rgba(0,212,255,0.08);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 4px;
+            padding: 0.22em 0.65em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .quiz-title {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .quiz-title em {
+            font-style: normal;
+            color: var(--accent-amber);
+        }
+
+        /* Two-column body: scenario left, options right */
+        .quiz-body {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(0.7rem, 1.8vw, 1.4rem);
+            overflow: hidden;
+        }
+        @media (max-width: 900px) { .quiz-body { grid-template-columns: 1fr; } }
+
+        .quiz-scenario {
+            background: rgba(255,184,0,0.04);
+            border: 1px solid var(--border-amber);
+            border-radius: 10px;
+            padding: clamp(0.7rem, 1.5vw, 1.15rem);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.75;
+            overflow: hidden;
+        }
+        .quiz-scenario strong.s-label {
+            display: block;
+            font-family: var(--font-display);
+            font-size: var(--body-size);
+            color: var(--accent-amber);
+            margin-bottom: 0.55em;
+        }
+        .quiz-scenario b { color: var(--text-primary); }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.3rem, 0.7vh, 0.5rem);
+            overflow: hidden;
+        }
+
+        .opt {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6em;
+            padding: clamp(0.4rem, 0.85vw, 0.65rem) clamp(0.6rem, 1vw, 0.85rem);
+            background: rgba(255,255,255,0.028);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 8px;
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            transition: background 0.3s ease, border-color 0.3s ease, opacity 0.3s ease, color 0.3s ease;
+            cursor: default;
+        }
+        .opt-lbl {
+            font-family: var(--font-mono);
+            color: var(--accent-cyan);
+            flex-shrink: 0;
+            font-size: 0.88em;
+        }
+
+        /* State: revealed */
+        .opt.correct {
+            background: rgba(0,230,118,0.07);
+            border-color: var(--border-green);
+            color: var(--text-primary);
+        }
+        .opt.correct .opt-lbl { color: var(--accent-green); }
+        .opt.wrong { opacity: 0.35; }
+
+        .quiz-footer {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--content-gap);
+            overflow: hidden;
+        }
+
+        .reveal-btn {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--bg-primary);
+            background: var(--accent-cyan);
+            border: none;
+            border-radius: 6px;
+            padding: clamp(0.38rem, 0.9vh, 0.6rem) clamp(0.8rem, 2vw, 1.2rem);
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .reveal-btn:hover:not(:disabled) {
+            background: #33deff;
+            transform: translateY(-1px);
+        }
+        .reveal-btn.done {
+            background: var(--accent-green);
+            cursor: default;
+        }
+
+        .ans-tip {
+            font-size: var(--xs-size);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-width: 75%;
+            opacity: 0;
+            transform: translateX(-8px);
+            transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+        }
+        .ans-tip.show { opacity: 1; transform: none; }
+        .ans-tip .tip-ok { color: var(--accent-green); font-weight: 700; }
+
+        /* ============================================================
+           SLIDE 7 — 对比: 传统 vs 理想
+           ============================================================ */
+        #s7 { background: var(--bg-primary); }
+
+        .compare-wrap {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: clamp(0.5rem, 1.5vw, 1.2rem);
+            align-items: stretch;
+            margin-top: var(--content-gap);
+        }
+        @media (max-width: 768px) {
+            .compare-wrap { grid-template-columns: 1fr; }
+            .compare-sep { display: none; }
+        }
+
+        .cmp-col {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: clamp(0.75rem, 1.8vw, 1.4rem);
+        }
+        .cmp-col.old { border: 1px solid var(--border-red);  }
+        .cmp-col.new { border: 1px solid var(--border-green); background: rgba(0,230,118,0.025); }
+
+        .cmp-title {
+            font-family: var(--font-display);
+            font-size: var(--body-size);
+            font-weight: 700;
+            margin-bottom: clamp(0.2rem, 0.5vh, 0.35rem);
+        }
+        .cmp-col.old .cmp-title { color: var(--accent-red);   }
+        .cmp-col.new .cmp-title { color: var(--accent-green);  }
+
+        .cmp-sub {
+            font-size: var(--xs-size);
+            color: var(--text-secondary);
+            margin-bottom: clamp(0.45rem, 1.1vh, 0.75rem);
+            font-style: italic;
+        }
+
+        .cmp-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.22rem, 0.55vh, 0.38rem);
+        }
+        .cmp-list li {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5em;
+            line-height: 1.5;
+        }
+        .cmp-list li::before { content: '→'; flex-shrink: 0; }
+        .cmp-col.old .cmp-list li::before { color: var(--accent-red);   opacity: 0.65; }
+        .cmp-col.new .cmp-list li::before { color: var(--accent-green); }
+
+        .compare-sep {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            font-size: var(--small-size);
+            color: var(--text-muted);
+        }
+        .compare-sep .vs {
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--accent-cyan);
+        }
+
+        /* ============================================================
+           SLIDE 8 — Agent 登场
+           ============================================================ */
+        #s8 { background: var(--bg-primary); }
+
+        .agent-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            justify-content: center;
+            gap: var(--content-gap);
+        }
+
+        .agent-slogan {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 4.2vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.3;
+        }
+        .agent-slogan em { font-style: normal; color: var(--accent-cyan); }
+
+        .flow-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(0.4rem, 1vw, 0.85rem);
+            width: 100%;
+            max-width: min(90vw, 900px);
+        }
+        @media (max-width: 768px) { .flow-row { grid-template-columns: repeat(2, 1fr); } }
+
+        .flow-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: clamp(0.65rem, 1.4vw, 1.1rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.38em;
+            position: relative;
+            text-align: center;
+        }
+        .flow-card::after {
+            content: '→';
+            position: absolute;
+            right: calc(-1 * clamp(0.3rem, 0.55vw, 0.5rem));
+            top: 50%;
+            transform: translateY(-50%) translateX(50%);
+            color: var(--accent-cyan);
+            font-size: var(--small-size);
+            z-index: 1;
+        }
+        .flow-card:last-child::after { display: none; }
+
+        .flow-icon { font-size: clamp(1.4rem, 2.8vw, 2.1rem); }
+        .flow-num {
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--accent-cyan);
+        }
+        .flow-lbl {
+            font-size: var(--small-size);
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        /* ============================================================
+           SLIDE 9 — DEMO (Minimal, dramatic)
+           ============================================================ */
+        #s9 { background: #04070f; }
+
+        .demo-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            gap: var(--content-gap);
+        }
+
+        .demo-label {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0,212,255,0.28);
+            border-radius: 4px;
+            padding: 0.25em 0.85em;
+            letter-spacing: 0.12em;
+        }
+
+        .demo-title {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 8vw, 7rem);
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(140deg, #ffffff 35%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-hint {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+        }
+
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
+        .blink { animation: cursor-blink 1.1s step-end infinite; }
+
+        /* Ambient glow for demo slide */
+        #s9 .demo-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 55%, rgba(0,212,255,0.055) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        /* ============================================================
+           SLIDE 10 — 价值与收益
+           ============================================================ */
+        #s10 { background: var(--bg-primary); }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(0.75rem, 2vw, 1.5rem);
+            margin-top: var(--content-gap);
+        }
+        @media (max-width: 768px) { .value-grid { grid-template-columns: 1fr; } }
+
+        .val-col {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: clamp(0.75rem, 1.8vw, 1.4rem);
+        }
+        .val-col.emp  { border: 1px solid var(--border-cyan);  }
+        .val-col.fin  { border: 1px solid var(--border-amber); }
+
+        .val-col-title {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 700;
+            margin-bottom: var(--elem-gap);
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+        }
+        .val-col.emp .val-col-title { color: var(--accent-cyan);  }
+        .val-col.fin .val-col-title { color: var(--accent-amber); }
+
+        .val-metric {
+            border-radius: 8px;
+            padding: clamp(0.45rem, 1vh, 0.7rem);
+            margin-bottom: clamp(0.45rem, 1vh, 0.7rem);
+            display: flex;
+            align-items: center;
+            gap: 0.6em;
+        }
+        .val-col.emp .val-metric { background: rgba(0,212,255,0.05);  border: 1px solid rgba(0,212,255,0.15); }
+        .val-col.fin .val-metric { background: rgba(255,184,0,0.05);  border: 1px solid rgba(255,184,0,0.15); }
+
+        .val-num {
+            font-family: var(--font-display);
+            font-size: clamp(1.1rem, 2.8vw, 2rem);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        .val-col.emp .val-num { color: var(--accent-cyan);  }
+        .val-col.fin .val-num { color: var(--accent-amber); }
+
+        .val-numlbl {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .val-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.22rem, 0.55vh, 0.4rem);
+        }
+        .val-list li {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5em;
+            line-height: 1.5;
+        }
+        .val-col.emp .val-list li .chk { color: var(--accent-cyan);  flex-shrink: 0; }
+        .val-col.fin .val-list li .chk { color: var(--accent-amber); flex-shrink: 0; }
+
+        /* ============================================================
+           SLIDE 11 — Q&A / 感谢聆听
+           ============================================================ */
+        #s11 { background: var(--bg-primary); }
+
+        .qa-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            gap: var(--content-gap);
+        }
+
+        .qa-main {
+            font-family: var(--font-display);
+            font-size: clamp(2.2rem, 7.5vw, 6.5rem);
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-primary);
+        }
+
+        .qa-sub {
+            font-size: var(--h3-size);
+            color: var(--text-secondary);
+            max-width: min(65vw, 580px);
+            line-height: 1.65;
+        }
+
+        .qa-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--bg-primary);
+            background: var(--accent-cyan);
+            border-radius: 6px;
+            padding: clamp(0.45rem, 1.1vh, 0.7rem) clamp(1rem, 2.5vw, 1.5rem);
+            text-decoration: none;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .qa-cta:hover { background: #33deff; transform: translateY(-2px); }
+
+        .qa-footer {
+            font-family: var(--font-mono);
+            font-size: var(--xs-size);
+            color: var(--text-muted);
+            letter-spacing: 0.12em;
+        }
+
+        #s11 .blob3 {
+            width:  min(50vw, 400px);
+            height: min(50vw, 400px);
+            background: radial-gradient(circle, rgba(0,212,255,0.055) 0%, transparent 70%);
+            top: -15%; left: -10%;
+        }
+        #s11 .blob4 {
+            width:  min(35vw, 280px);
+            height: min(35vw, 280px);
+            background: radial-gradient(circle, rgba(255,184,0,0.045) 0%, transparent 70%);
+            bottom: -12%; right: 5%;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress-bar"></div>
+
+<!-- Navigation dots -->
+<nav id="nav-dots" aria-label="幻灯片导航"></nav>
+
+<!-- Slide counter -->
+<div id="slide-counter">01 / 11</div>
+
+
+<!-- ================================================================
+     SLIDE 1 — COVER
+     ================================================================ -->
+<section class="slide grid-bg" id="s1">
+    <!-- Decorative ambient glows -->
+    <div class="glow-blob blob1"></div>
+    <div class="glow-blob blob2"></div>
+
+    <!-- Main content -->
+    <div class="cover-inner">
+        <div class="cover-tag reveal d1">智能报销助手 · Agent 项目分享</div>
+        <h1 class="cover-title reveal d2">
+            告别<em>贴票</em>噩梦，<br>让报销回归简单
+        </h1>
+        <p class="cover-sub reveal d3">从繁琐到一键提交，让 AI 替你搞定一切</p>
+        <div class="cover-divider reveal d4"></div>
+        <div class="cover-author reveal d5">汇报人：<span>方佳俊</span>&emsp;|&emsp;组员：<span>郑峙岳、王雅琪</span></div>
+    </div>
+
+    <!-- Decorative receipt stack (right side, hidden on mobile) -->
+    <div class="cover-deco hide-mobile">
+        <div class="receipt r1 reveal-scale d3">
+            <div class="rline w-full"></div>
+            <div class="rline w-80 amber"></div>
+            <div class="rline w-full"></div>
+            <div class="rline w-55"></div>
+        </div>
+        <div class="ai-circle reveal-scale d4">🤖</div>
+        <div class="receipt r2 reveal-scale d5">
+            <div class="rline w-80"></div>
+            <div class="rline w-full"></div>
+            <div class="rline w-55 amber"></div>
+            <div class="rline w-80"></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 2 — 灵魂拷问
+     ================================================================ -->
+<section class="slide" id="s2">
+    <div class="q-center">
+        <div class="section-badge reveal d1">第一部分 · 背景与共鸣</div>
+        <span class="emoji-float reveal d2">🙋</span>
+        <p class="big-q reveal d3">
+            在座的各位，有谁用过<br><span class="hl-cyan">公司的报销系统</span>？
+        </p>
+        <p class="sub-q reveal d4">
+            那再问——有谁觉得报销是一件<span class="hl-amber">"轻松愉快"</span>的事情？
+        </p>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 3 — 我的"血泪史"
+     ================================================================ -->
+<section class="slide grid-bg" id="s3">
+    <div class="section-badge reveal d1">天下苦"报销"久矣</div>
+    <h2 class="slide-h2 reveal d2">
+        我的<span style="color:var(--accent-amber)">"血泪史"</span>
+    </h2>
+    <div class="pain-grid">
+        <div class="pain-card reveal d3">
+            <div class="pain-icon">📬</div>
+            <div class="pain-title">发票大搜集</div>
+            <p class="pain-desc">每次报销前，要去邮箱一封封下载电子发票，把各种 PDF、图片归拢整理，耗时耗力。</p>
+        </div>
+        <div class="pain-card reveal d4">
+            <div class="pain-icon">🤔</div>
+            <div class="pain-title">灵魂分类题</div>
+            <p class="pain-desc">看着一堆打车发票发愁，还要判断该选哪种"费用类型"，选错直接被财务退回。</p>
+        </div>
+        <div class="pain-card reveal d5">
+            <div class="pain-icon">🧮</div>
+            <div class="pain-title">人肉计算器</div>
+            <p class="pain-desc">所有发票金额逐笔加总，算错一毛钱就对不上账，全部退回重填。</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 4 — QUIZ 1：打车费的"薛定谔状态"
+     ================================================================ -->
+<section class="slide slide-quiz grid-bg" id="s4">
+    <div class="quiz-wrap">
+        <!-- Header -->
+        <div class="quiz-header reveal d1">
+            <span class="quiz-badge">第1题 / 3 · 报销防坑测试</span>
+            <h2 class="quiz-title">打车费的<em>"薛定谔状态"</em></h2>
+        </div>
+
+        <!-- Body: scenario + options -->
+        <div class="quiz-body reveal d2">
+            <div class="quiz-scenario">
+                <strong class="s-label">📋 情景题</strong>
+                小明常驻深圳。<br>
+                周二他在深圳拜访客户，打车花了 <b>¥50</b>。<br>
+                周四出差上海，从酒店打车去客户公司，花了 <b>¥30</b>。<br><br>
+                这两张滴滴发票，分别该选什么费用类型？
+            </div>
+            <div class="quiz-options" id="q1-opts">
+                <div class="opt" data-q="1" data-ok="false">
+                    <span class="opt-lbl">A</span>
+                    <span>两张都选"市内交通费"</span>
+                </div>
+                <div class="opt" data-q="1" data-ok="false">
+                    <span class="opt-lbl">B</span>
+                    <span>两张都选"差旅费 - 的士费"</span>
+                </div>
+                <div class="opt" data-q="1" data-ok="true">
+                    <span class="opt-lbl">C</span>
+                    <span>深圳→"市内交通费"，上海→"差旅费 - 的士费"</span>
+                </div>
+                <div class="opt" data-q="1" data-ok="false">
+                    <span class="opt-lbl">D</span>
+                    <span>深圳→"市内交通费"，上海→"差旅费 - 出差交通费"</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="quiz-footer reveal d3">
+            <button class="reveal-btn" id="btn1" onclick="revealAnswer(1)">🔍 揭晓答案</button>
+            <p class="ans-tip" id="tip1">
+                <span class="tip-ok">✅ 答案 C</span>：常驻城市打车 = 市内交通费；出差地打车 = 差旅费-的士费；<strong style="color:var(--accent-amber)">往返机场/火车站</strong>才选"出差交通费"。选错直接被退！
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 5 — QUIZ 2：去机场的"刺客"
+     ================================================================ -->
+<section class="slide slide-quiz grid-bg" id="s5">
+    <div class="quiz-wrap">
+        <div class="quiz-header reveal d1">
+            <span class="quiz-badge">第2题 / 3 · 报销防坑测试</span>
+            <h2 class="quiz-title">去机场的<em>"刺客"</em></h2>
+        </div>
+
+        <div class="quiz-body reveal d2">
+            <div class="quiz-scenario">
+                <strong class="s-label">📋 情景题</strong>
+                小红出差去北京：<br>
+                ① 从家打车到宝安机场 <b>¥100</b><br>
+                ② 从大兴机场打车去酒店 <b>¥120</b><br>
+                ③ 从酒店打车去客户公司 <b>¥50</b><br><br>
+                这三笔打车费，该怎么选类型？
+            </div>
+            <div class="quiz-options" id="q2-opts">
+                <div class="opt" data-q="2" data-ok="false">
+                    <span class="opt-lbl">A</span>
+                    <span>只要出差，全选"差旅费 - 的士费"</span>
+                </div>
+                <div class="opt" data-q="2" data-ok="false">
+                    <span class="opt-lbl">B</span>
+                    <span>去机场选"市内交通费"，后两笔选"差旅费 - 的士费"</span>
+                </div>
+                <div class="opt" data-q="2" data-ok="true">
+                    <span class="opt-lbl">C</span>
+                    <span>①②选"差旅费 - 出差交通费"，③选"差旅费 - 的士费"</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-footer reveal d3">
+            <button class="reveal-btn" id="btn2" onclick="revealAnswer(2)">🔍 揭晓答案</button>
+            <p class="ans-tip" id="tip2">
+                <span class="tip-ok">✅ 答案 C</span>：往返机场、火车站 = 【出差交通费】；在出差地其他打车办事 = 【的士费】。是不是感觉像在考驾照科目一？
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 6 — QUIZ 3：市内打车的"隐藏关卡"
+     ================================================================ -->
+<section class="slide slide-quiz grid-bg" id="s6">
+    <div class="quiz-wrap">
+        <div class="quiz-header reveal d1">
+            <span class="quiz-badge">第3题 / 3 · 报销防坑测试</span>
+            <h2 class="quiz-title">市内打车的<em>"隐藏关卡"</em></h2>
+        </div>
+
+        <div class="quiz-body reveal d2">
+            <div class="quiz-scenario">
+                <strong class="s-label">📋 情景题</strong>
+                小强昨晚加班到 22:00，<br>打车回家花了 <b>¥60</b>。<br><br>
+                他报销"市内交通费"时，<br>只上传了一张<b>滴滴电子发票</b>并填了金额。<br><br>
+                请问他的报销单会有什么下场？
+            </div>
+            <div class="quiz-options" id="q3-opts">
+                <div class="opt" data-q="3" data-ok="false">
+                    <span class="opt-lbl">A</span>
+                    <span>顺利通过，坐等打款 🎉</span>
+                </div>
+                <div class="opt" data-q="3" data-ok="true">
+                    <span class="opt-lbl">B</span>
+                    <span>被打回：必须补充"行程单"，并填写"事由"和"往返地"</span>
+                </div>
+                <div class="opt" data-q="3" data-ok="false">
+                    <span class="opt-lbl">C</span>
+                    <span>被打回：加班打车不能报销</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-footer reveal d3">
+            <button class="reveal-btn" id="btn3" onclick="revealAnswer(3)">🔍 揭晓答案</button>
+            <p class="ans-tip" id="tip3">
+                <span class="tip-ok">✅ 答案 B</span>：市内交通费除发票外，必须附【行程单】，并手填"事由、上车点、下车点"。少一项退回重填——人的耐心就是这么耗尽的。
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 7 — 传统 VS 理想报销系统
+     ================================================================ -->
+<section class="slide grid-bg" id="s7">
+    <div class="section-badge reveal d1">第三部分 · 解决方案</div>
+    <h2 class="slide-h2 reveal d2">报销系统的进化</h2>
+
+    <div class="compare-wrap">
+        <div class="cmp-col old reveal-left d3">
+            <div class="cmp-title">😩 传统报销系统</div>
+            <div class="cmp-sub">人去适应系统</div>
+            <ul class="cmp-list">
+                <li>背诵报销制度，全靠脑子记</li>
+                <li>手动到处下载整理发票</li>
+                <li>逐条手动判断费用类型</li>
+                <li>人工验证发票抬头合规性</li>
+                <li>手动计算各笔金额合计</li>
+                <li>手动补写备注与附件</li>
+            </ul>
+        </div>
+
+        <div class="compare-sep reveal d3">
+            <span style="font-size:1.4em">⚡</span>
+            <span class="vs">VS</span>
+        </div>
+
+        <div class="cmp-col new reveal-right d3">
+            <div class="cmp-title">✨ 理想报销系统</div>
+            <div class="cmp-sub">系统来适应人</div>
+            <ul class="cmp-list">
+                <li>只管上传凭证，其余交给 Agent</li>
+                <li>自动识别提取发票信息</li>
+                <li>智能匹配公司报销规则</li>
+                <li>自动校验发票合规性</li>
+                <li>自动汇总计算报销总额</li>
+                <li>一键生成标准报销单</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 8 — 智能报销助手 Agent 登场
+     ================================================================ -->
+<section class="slide grid-bg" id="s8">
+    <div class="agent-inner">
+        <div class="section-badge reveal d1" style="justify-content:center">智能报销助手Agent · 登场</div>
+
+        <p class="agent-slogan reveal d2">
+            你只管<em>上传</em>，<br>
+            剩下的交给 <em>Agent</em> 🤖
+        </p>
+
+        <div class="flow-row reveal d3">
+            <div class="flow-card">
+                <span class="flow-icon">📤</span>
+                <span class="flow-num">Step 01</span>
+                <span class="flow-lbl">上传发票<br>及行程单</span>
+            </div>
+            <div class="flow-card">
+                <span class="flow-icon">🔍</span>
+                <span class="flow-num">Step 02</span>
+                <span class="flow-lbl">自动识别<br>提取信息</span>
+            </div>
+            <div class="flow-card">
+                <span class="flow-icon">🧠</span>
+                <span class="flow-num">Step 03</span>
+                <span class="flow-lbl">智能匹配<br>报销规则</span>
+            </div>
+            <div class="flow-card">
+                <span class="flow-icon">✅</span>
+                <span class="flow-num">Step 04</span>
+                <span class="flow-lbl">一键提交<br>标准报销单</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 9 — 核心功能演示 (Live Demo)
+     ================================================================ -->
+<section class="slide" id="s9">
+    <div class="demo-glow"></div>
+
+    <div class="demo-inner">
+        <div class="demo-label reveal d1">LIVE DEMO · 现场演示</div>
+        <h2 class="demo-title reveal d2">
+            核心功能<span class="blink" style="-webkit-text-fill-color:var(--accent-cyan);color:var(--accent-cyan);">_</span>
+        </h2>
+        <p class="demo-hint reveal d3">请看我的屏幕 →</p>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 10 — 价值与收益
+     ================================================================ -->
+<section class="slide grid-bg" id="s10">
+    <div class="section-badge reveal d1">第五部分 · 总结与展望</div>
+    <h2 class="slide-h2 reveal d2">价值与收益</h2>
+
+    <div class="value-grid">
+        <div class="val-col emp reveal-left d3">
+            <div class="val-col-title">👤 对员工</div>
+            <div class="val-metric">
+                <div>
+                    <div class="val-num">2h → 5min</div>
+                    <div class="val-numlbl">每月报销耗时大幅缩短</div>
+                </div>
+            </div>
+            <ul class="val-list">
+                <li><span class="chk">✓</span>再也不用做费用分类题</li>
+                <li><span class="chk">✓</span>告别到处下载整理发票</li>
+                <li><span class="chk">✓</span>不再人肉按计算器算总额</li>
+                <li><span class="chk">✓</span>附件备注自动填写，不漏项</li>
+            </ul>
+        </div>
+
+        <div class="val-col fin reveal-right d3">
+            <div class="val-col-title">🏦 对财务</div>
+            <div class="val-metric">
+                <div>
+                    <div class="val-num">退单率 ↓↓</div>
+                    <div class="val-numlbl">规范化输入，审核效率大幅提升</div>
+                </div>
+            </div>
+            <ul class="val-list">
+                <li><span class="chk">✓</span>告别"报销类型选错"被退回</li>
+                <li><span class="chk">✓</span>告别"附件缺失"被退回</li>
+                <li><span class="chk">✓</span>标准化输出，审核更顺畅</li>
+                <li><span class="chk">✓</span>合规校验前置，减少人工核查</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     SLIDE 11 — 感谢聆听 / Q&A
+     ================================================================ -->
+<section class="slide" id="s11">
+    <div class="glow-blob blob3"></div>
+    <div class="glow-blob blob4"></div>
+
+    <div class="qa-inner">
+        <div class="section-badge reveal d1" style="justify-content:center">感谢聆听</div>
+        <h2 class="qa-main reveal d2">Any Questions? 🙋</h2>
+        <p class="qa-sub reveal d3">欢迎大家体验智能报销助手，多提宝贵建议！</p>
+        <a class="qa-cta reveal d4" href="#">🚀 立即体验</a>
+        <div class="qa-footer reveal d5">THANK YOU · 智能报销助手 Agent · 2026</div>
+    </div>
+</section>
+
+
+<script>
+/* ================================================================
+   SLIDE PRESENTATION CONTROLLER
+   Handles: keyboard nav, wheel nav, touch/swipe, progress bar,
+            nav dots, slide counter, IntersectionObserver animations.
+   ================================================================ */
+class SlidePresentation {
+    constructor() {
+        this.slides       = Array.from(document.querySelectorAll('.slide'));
+        this.total        = this.slides.length;
+        this.current      = 0;
+        this.$progress    = document.getElementById('progress-bar');
+        this.$counter     = document.getElementById('slide-counter');
+        this.$navDots     = document.getElementById('nav-dots');
+
+        this._init();
+    }
+
+    _init() {
+        this._buildDots();
+        this._observe();
+        this._bindKeyboard();
+        this._bindWheel();
+        this._bindTouch();
+        this._updateUI(0);
+    }
+
+    /* Build one dot per slide */
+    _buildDots() {
+        this.slides.forEach((_, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'nav-dot';
+            btn.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
+            btn.addEventListener('click', () => this._go(i));
+            this.$navDots.appendChild(btn);
+        });
+        this.dots = Array.from(this.$navDots.querySelectorAll('.nav-dot'));
+    }
+
+    /* IntersectionObserver: add .visible class & track current slide */
+    _observe() {
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    this._updateUI(this.slides.indexOf(entry.target));
+                }
+            });
+        }, { threshold: 0.5 });
+
+        this.slides.forEach(s => obs.observe(s));
+    }
+
+    /* Update progress bar, counter, dots */
+    _updateUI(idx) {
+        this.current = idx;
+        this.$progress.style.width = `${((idx + 1) / this.total) * 100}%`;
+        this.$counter.textContent =
+            `${String(idx + 1).padStart(2, '0')} / ${String(this.total).padStart(2, '0')}`;
+        this.dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+
+    /* Smooth-scroll to target slide */
+    _go(idx) {
+        if (idx < 0 || idx >= this.total) return;
+        this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* Keyboard: arrows, space, home, end */
+    _bindKeyboard() {
+        document.addEventListener('keydown', e => {
+            switch (e.key) {
+                case 'ArrowDown': case 'ArrowRight': case ' ':
+                    e.preventDefault(); this._go(this.current + 1); break;
+                case 'ArrowUp': case 'ArrowLeft':
+                    e.preventDefault(); this._go(this.current - 1); break;
+                case 'Home': this._go(0); break;
+                case 'End':  this._go(this.total - 1); break;
+            }
+        });
+    }
+
+    /* Mouse wheel: throttled at 800ms to avoid over-scrolling */
+    _bindWheel() {
+        let last = 0;
+        document.addEventListener('wheel', e => {
+            e.preventDefault();
+            const now = Date.now();
+            if (now - last < 800) return;
+            last = now;
+            this._go(this.current + (e.deltaY > 0 ? 1 : -1));
+        }, { passive: false });
+    }
+
+    /* Touch/swipe navigation */
+    _bindTouch() {
+        let startY = 0;
+        document.addEventListener('touchstart', e => {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', e => {
+            const dy = startY - e.changedTouches[0].clientY;
+            if (Math.abs(dy) < 50) return;
+            this._go(this.current + (dy > 0 ? 1 : -1));
+        }, { passive: true });
+    }
+}
+
+/* ================================================================
+   QUIZ ANSWER REVEAL
+   quizNum: 1 / 2 / 3  →  corresponds to slides s4 / s5 / s6
+   ================================================================ */
+function revealAnswer(quizNum) {
+    /* Highlight correct / fade wrong options */
+    document.querySelectorAll(`.opt[data-q="${quizNum}"]`).forEach(opt => {
+        if (opt.dataset.ok === 'true') {
+            opt.classList.add('correct');
+        } else {
+            opt.classList.add('wrong');
+        }
+    });
+
+    /* Show tip */
+    document.getElementById(`tip${quizNum}`).classList.add('show');
+
+    /* Update button */
+    const btn = document.getElementById(`btn${quizNum}`);
+    btn.textContent = '✅ 已揭晓';
+    btn.classList.add('done');
+    btn.disabled = true;
+}
+
+/* ================================================================
+   INITIALISE
+   ================================================================ */
+new SlidePresentation();
+</script>
+
+</body>
+</html>
