@@ -1407,8 +1407,8 @@ class SlidePresentation {
         this._buildDots();
         this._observe();
         this._bindKeyboard();
-        this._bindWheel();
-        this._bindTouch();
+        this._bindClick();
+        this._blockScroll();
         this._updateUI(0);
     }
 
@@ -1467,31 +1467,22 @@ class SlidePresentation {
         });
     }
 
-    /* Mouse wheel: throttled at 800ms to avoid over-scrolling */
-    _bindWheel() {
-        let last = 0;
-        document.addEventListener('wheel', e => {
-            e.preventDefault();
-            const now = Date.now();
-            if (now - last < 800) return;
-            last = now;
-            this._go(this.current + (e.deltaY > 0 ? 1 : -1));
-        }, { passive: false });
+    /* Block mouse wheel & touch scroll — navigation is click-only */
+    _blockScroll() {
+        document.addEventListener('wheel', e => e.preventDefault(), { passive: false });
+        document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
     }
 
-    /* Touch/swipe navigation */
-    _bindTouch() {
-        let startY = 0;
-        document.addEventListener('touchstart', e => {
-            startY = e.touches[0].clientY;
-        }, { passive: true });
-
-        document.addEventListener('touchend', e => {
-            const dy = startY - e.changedTouches[0].clientY;
-            if (Math.abs(dy) < 50) return;
-            this._go(this.current + (dy > 0 ? 1 : -1));
-        }, { passive: true });
+    /* Mouse click: advance to next slide (ignore clicks on interactive elements) */
+    _bindClick() {
+        document.addEventListener('click', e => {
+            const ignored = ['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA'];
+            if (ignored.includes(e.target.tagName)) return;
+            if (e.target.closest('.nav-dots, .nav-dot, .reveal-btn, a')) return;
+            this._go(this.current + 1);
+        });
     }
+
 }
 
 /* ================================================================
