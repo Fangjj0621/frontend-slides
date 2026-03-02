@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 赋能产品经理：工作流重塑与实践</title>
+
+    <!-- Fonts: Clash Display (display) + Satoshi (body) from Fontshare -->
+    <link rel="preconnect" href="https://api.fontshare.com">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap">
+    <!-- JetBrains Mono for code-like accents -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES — NEON CYBER THEME
+           Deep navy + cyan + magenta, futuristic techy
+           =========================================== */
+        :root {
+            --bg-primary: #0a0f1c;
+            --bg-secondary: #0d1428;
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --bg-card-hover: rgba(255, 255, 255, 0.07);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+
+            --text-primary: #e8f4f8;
+            --text-secondary: #7a9ab5;
+            --text-muted: #4a6a85;
+
+            --accent-cyan: #00ffcc;
+            --accent-cyan-dim: rgba(0, 255, 204, 0.15);
+            --accent-cyan-glow: rgba(0, 255, 204, 0.4);
+            --accent-magenta: #ff00aa;
+            --accent-magenta-dim: rgba(255, 0, 170, 0.15);
+            --accent-magenta-glow: rgba(255, 0, 170, 0.4);
+            --accent-yellow: #ffdd00;
+            --accent-yellow-dim: rgba(255, 221, 0, 0.15);
+
+            /* Typography — all use clamp() for responsive scaling */
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --title-size: clamp(2rem, 5.5vw, 4.5rem);
+            --h2-size: clamp(1.4rem, 3.2vw, 2.6rem);
+            --h3-size: clamp(1rem, 2vw, 1.6rem);
+            --body-size: clamp(0.8rem, 1.4vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.85rem);
+            --mono-size: clamp(0.7rem, 1.1vw, 0.9rem);
+
+            /* Spacing — clamp() for viewport responsiveness */
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(0.8rem, 2vw, 2rem);
+            --element-gap: clamp(0.4rem, 1vw, 1rem);
+
+            /* Animation */
+            --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --dur-fast: 0.4s;
+            --dur-normal: 0.6s;
+            --dur-slow: 0.9s;
+        }
+
+        /* ===========================================
+           BASE RESET
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html {
+            height: 100%;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            height: 100%;
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Each slide = exact viewport height — no exceptions */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Grid pattern background — applied to all slides */
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        .slide-label {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: var(--element-gap);
+        }
+
+        .slide-title {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 600;
+            line-height: 1.15;
+            color: var(--text-primary);
+        }
+
+        .accent-cyan { color: var(--accent-cyan); }
+        .accent-magenta { color: var(--accent-magenta); }
+        .accent-yellow { color: var(--accent-yellow); }
+
+        /* ===========================================
+           REVEAL ANIMATIONS
+           Triggered by .visible class (added by Intersection Observer)
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition:
+                opacity var(--dur-normal) var(--ease-expo),
+                transform var(--dur-normal) var(--ease-expo);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition:
+                opacity var(--dur-normal) var(--ease-expo),
+                transform var(--dur-normal) var(--ease-expo);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition:
+                opacity var(--dur-normal) var(--ease-expo),
+                transform var(--dur-normal) var(--ease-expo);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition:
+                opacity var(--dur-normal) var(--ease-expo),
+                transform var(--dur-normal) var(--ease-expo);
+        }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-right,
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: none;
+        }
+
+        /* Staggered delays for child elements */
+        .stagger > *:nth-child(1) { transition-delay: 0.05s; }
+        .stagger > *:nth-child(2) { transition-delay: 0.15s; }
+        .stagger > *:nth-child(3) { transition-delay: 0.25s; }
+        .stagger > *:nth-child(4) { transition-delay: 0.35s; }
+        .stagger > *:nth-child(5) { transition-delay: 0.45s; }
+        .stagger > *:nth-child(6) { transition-delay: 0.55s; }
+
+        /* ===========================================
+           BADGE / TAG COMPONENT
+           =========================================== */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4em;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            letter-spacing: 0.1em;
+            padding: 0.3em 0.8em;
+            border-radius: 2px;
+            border: 1px solid;
+        }
+
+        .badge-cyan {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan-glow);
+            background: var(--accent-cyan-dim);
+        }
+
+        .badge-magenta {
+            color: var(--accent-magenta);
+            border-color: var(--accent-magenta-glow);
+            background: var(--accent-magenta-dim);
+        }
+
+        .badge-yellow {
+            color: var(--accent-yellow);
+            border-color: rgba(255, 221, 0, 0.4);
+            background: var(--accent-yellow-dim);
+        }
+
+        /* ===========================================
+           CARD COMPONENT
+           =========================================== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: clamp(0.8rem, 1.8vw, 1.5rem);
+        }
+
+        .card-cyan {
+            border-color: rgba(0, 255, 204, 0.2);
+            background: rgba(0, 255, 204, 0.04);
+        }
+
+        .card-magenta {
+            border-color: rgba(255, 0, 170, 0.2);
+            background: rgba(255, 0, 170, 0.04);
+        }
+
+        /* ===========================================
+           GLOW LINE — decorative horizontal accent
+           =========================================== */
+        .glow-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            margin: var(--element-gap) 0;
+            opacity: 0.5;
+        }
+
+        .glow-line-magenta {
+            background: linear-gradient(90deg, transparent, var(--accent-magenta), transparent);
+        }
+
+        /* ===========================================
+           BULLET LIST
+           =========================================== */
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--element-gap);
+        }
+
+        .bullet-list li {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: flex;
+            gap: 0.75em;
+            align-items: flex-start;
+        }
+
+        .bullet-list li::before {
+            content: '▸';
+            color: var(--accent-cyan);
+            flex-shrink: 0;
+            margin-top: 0.05em;
+        }
+
+        .bullet-list.magenta li::before {
+            color: var(--accent-magenta);
+        }
+
+        .bullet-list li strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* ===========================================
+           PROGRESS BAR (top edge)
+           =========================================== */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-magenta));
+            transition: width 0.3s var(--ease-expo);
+            z-index: 1000;
+            box-shadow: 0 0 8px var(--accent-cyan-glow);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS (right side)
+           =========================================== */
+        #nav-dots {
+            position: fixed;
+            right: clamp(0.75rem, 2vw, 1.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 1vh, 10px);
+            z-index: 1000;
+        }
+
+        .nav-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s var(--ease-expo);
+            border: none;
+            padding: 0;
+        }
+
+        .nav-dot.active {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan-glow);
+            transform: scale(1.4);
+        }
+
+        .nav-dot:hover:not(.active) {
+            background: var(--text-secondary);
+            transform: scale(1.2);
+        }
+
+        /* ===========================================
+           SLIDE COUNTER (bottom-right)
+           =========================================== */
+        .slide-counter {
+            position: absolute;
+            bottom: clamp(1rem, 2.5vw, 2rem);
+            right: clamp(2rem, 5vw, 5rem);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 1;
+        }
+
+        .slide-counter span {
+            color: var(--accent-cyan);
+        }
+
+        /* ===========================================
+           KEYBOARD HINT (bottom-left of title slide)
+           =========================================== */
+        .keyboard-hint {
+            position: absolute;
+            bottom: clamp(1rem, 2.5vw, 2rem);
+            left: clamp(2rem, 5vw, 5rem);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            display: flex;
+            gap: 1em;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .key {
+            border: 1px solid var(--text-muted);
+            border-radius: 3px;
+            padding: 0.1em 0.4em;
+            font-size: 0.9em;
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS — Height-based
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem, 3.5vw, 2.5rem);
+                --content-gap: clamp(0.5rem, 1.5vw, 1.2rem);
+                --title-size: clamp(1.5rem, 4.5vw, 3rem);
+                --h2-size: clamp(1.2rem, 3vw, 2rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.4rem, 1.2vw, 0.8rem);
+                --title-size: clamp(1.25rem, 4vw, 2.2rem);
+                --h2-size: clamp(1rem, 2.5vw, 1.6rem);
+                --body-size: clamp(0.7rem, 1.2vw, 0.9rem);
+            }
+
+            #nav-dots, .keyboard-hint { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2vw, 1rem);
+                --title-size: clamp(1.1rem, 3.5vw, 1.8rem);
+                --h2-size: clamp(0.9rem, 2.2vw, 1.4rem);
+                --body-size: clamp(0.65rem, 1vw, 0.85rem);
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.5rem, 8vw, 3rem);
+                --h2-size: clamp(1.2rem, 5.5vw, 2rem);
+            }
+
+            .two-col { flex-direction: column !important; }
+            .three-col { flex-direction: column !important; gap: clamp(0.5rem, 2vw, 1rem) !important; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ===========================================
+           SLIDE 1 — TITLE SLIDE
+           Full canvas particle background
+           =========================================== */
+        #slide-1 {
+            background: var(--bg-primary);
+        }
+
+        #particle-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .title-slide-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100%;
+            padding: var(--slide-padding);
+        }
+
+        .main-title {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--text-primary);
+            margin-bottom: var(--element-gap);
+        }
+
+        .main-title .highlight {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 30px var(--accent-cyan-glow);
+        }
+
+        .subtitle {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            max-width: 55ch;
+            line-height: 1.6;
+            margin-bottom: var(--content-gap);
+        }
+
+        .presenter-info {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+
+        .presenter-info::before {
+            content: '';
+            display: block;
+            width: 2em;
+            height: 1px;
+            background: var(--accent-cyan);
+        }
+
+        /* ===========================================
+           SLIDE 2 — PM 新定位
+           Two-column: left text, right workflow cycle
+           =========================================== */
+        .two-col {
+            display: flex;
+            gap: var(--content-gap);
+            align-items: flex-start;
+            height: 100%;
+        }
+
+        .col-left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--element-gap);
+        }
+
+        .col-right {
+            flex: 0 0 clamp(200px, 38%, 380px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Workflow cycle visual */
+        .workflow-cycle {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .cycle-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75em;
+            padding: clamp(0.5rem, 1.2vw, 0.9rem) clamp(0.75rem, 1.5vw, 1.2rem);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+        }
+
+        .cycle-item:first-child { border-radius: 6px 6px 0 0; }
+        .cycle-item:last-child { border-radius: 0 0 6px 6px; }
+
+        .cycle-item.active {
+            border-color: rgba(0, 255, 204, 0.3);
+            background: rgba(0, 255, 204, 0.06);
+        }
+
+        .cycle-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .cycle-item.active .cycle-dot {
+            background: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan-glow);
+        }
+
+        .cycle-label {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.2;
+        }
+
+        .cycle-item.active .cycle-label {
+            color: var(--text-primary);
+        }
+
+        .cycle-connector {
+            width: 1px;
+            height: 12px;
+            background: linear-gradient(to bottom, var(--accent-cyan), transparent);
+            margin: 0 auto;
+            margin-left: clamp(1.4rem, 3vw, 1.9rem);
+            opacity: 0.4;
+        }
+
+        /* ===========================================
+           SLIDE 3 & 5 — 能 SLIDES (cyan-themed)
+           Tool card grid
+           =========================================== */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+            gap: clamp(0.5rem, 1.2vw, 1rem);
+        }
+
+        .tool-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(0, 255, 204, 0.15);
+            border-radius: 6px;
+            padding: clamp(0.7rem, 1.5vw, 1.2rem);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+
+        .tool-card-icon {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+        }
+
+        .tool-card-name {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--accent-cyan);
+            letter-spacing: 0.05em;
+        }
+
+        .tool-card-desc {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===========================================
+           SLIDE 4 & 7 — 盲区 SLIDES (magenta-themed)
+           Warning style layout
+           =========================================== */
+        .warning-banner {
+            display: flex;
+            align-items: center;
+            gap: 0.75em;
+            padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.75rem, 1.5vw, 1.2rem);
+            background: rgba(255, 0, 170, 0.08);
+            border: 1px solid rgba(255, 0, 170, 0.3);
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--accent-magenta);
+            letter-spacing: 0.1em;
+        }
+
+        /* ===========================================
+           SLIDE 5 — TOOL CHAIN (3-column flow)
+           =========================================== */
+        .three-col {
+            display: flex;
+            gap: var(--element-gap);
+            align-items: stretch;
+        }
+
+        .chain-card {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: clamp(0.8rem, 1.8vw, 1.4rem);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 0.8vw, 0.7rem);
+            position: relative;
+        }
+
+        .chain-card:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: calc(-1 * clamp(0.5rem, 1.5vw, 1.2rem) - 0.5em);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-cyan);
+            font-size: var(--h3-size);
+            z-index: 2;
+        }
+
+        .chain-number {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+        }
+
+        .chain-tool {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 600;
+            color: var(--accent-cyan);
+        }
+
+        .chain-subtitle {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===========================================
+           SLIDE 6 — BIDIRECTIONAL FLOW
+           PRD ↔ Code
+           =========================================== */
+        .bi-flow {
+            display: flex;
+            align-items: center;
+            gap: var(--content-gap);
+        }
+
+        .bi-box {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: clamp(0.8rem, 2vw, 1.6rem);
+        }
+
+        .bi-box-label {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--accent-cyan);
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5em;
+        }
+
+        .bi-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5em;
+            color: var(--accent-cyan);
+            font-size: var(--h3-size);
+            flex-shrink: 0;
+        }
+
+        .bi-arrow span {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+
+        .prd-code {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .prd-code .comment { color: var(--text-muted); }
+        .prd-code .key-word { color: var(--accent-cyan); }
+        .prd-code .value { color: var(--accent-yellow); }
+
+        /* ===========================================
+           SLIDE 8 — PPT FLOW DIAGRAM
+           =========================================== */
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: var(--element-gap);
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--element-gap);
+        }
+
+        .flow-step-num {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--accent-cyan);
+            background: var(--accent-cyan-dim);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 3px;
+            padding: 0.2em 0.6em;
+            flex-shrink: 0;
+            line-height: 1.6;
+        }
+
+        .flow-step-content {
+            flex: 1;
+        }
+
+        .flow-step-title {
+            font-size: var(--body-size);
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.25em;
+        }
+
+        .flow-step-desc {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .flow-branch {
+            display: flex;
+            gap: var(--element-gap);
+            margin-left: clamp(2rem, 4vw, 3.5rem);
+        }
+
+        .branch-option {
+            flex: 1;
+            padding: clamp(0.5rem, 1.2vw, 0.9rem);
+            border-radius: 4px;
+            border: 1px solid;
+        }
+
+        .branch-a {
+            border-color: rgba(0, 255, 204, 0.25);
+            background: rgba(0, 255, 204, 0.04);
+        }
+
+        .branch-b {
+            border-color: rgba(255, 221, 0, 0.25);
+            background: rgba(255, 221, 0, 0.04);
+        }
+
+        .branch-tag {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            margin-bottom: 0.3em;
+        }
+
+        .branch-a .branch-tag { color: var(--accent-cyan); }
+        .branch-b .branch-tag { color: var(--accent-yellow); }
+
+        .branch-desc {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===========================================
+           SLIDE 9 — PITFALLS (icon list)
+           =========================================== */
+        .rule-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--element-gap);
+        }
+
+        .rule-item {
+            display: flex;
+            gap: var(--element-gap);
+            align-items: flex-start;
+            padding: clamp(0.6rem, 1.4vw, 1.1rem);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+        }
+
+        .rule-icon {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            flex-shrink: 0;
+        }
+
+        .rule-body {
+            flex: 1;
+        }
+
+        .rule-title {
+            font-size: var(--body-size);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25em;
+        }
+
+        .rule-desc {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        /* ===========================================
+           SLIDE 10 — Q&A / CLOSING
+           =========================================== */
+        #slide-10 {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .qa-title {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--content-gap);
+        }
+
+        .qa-quote {
+            max-width: 52ch;
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            line-height: 1.7;
+            position: relative;
+            padding: 0 1.5em;
+        }
+
+        .qa-quote::before,
+        .qa-quote::after {
+            content: '"';
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 4rem);
+            color: var(--accent-cyan);
+            opacity: 0.3;
+            position: absolute;
+            line-height: 1;
+        }
+
+        .qa-quote::before { left: 0; top: -0.2em; }
+        .qa-quote::after { right: 0; bottom: -0.4em; }
+
+        .qa-divider {
+            width: clamp(40px, 8vw, 80px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            margin: var(--content-gap) auto;
+        }
+
+        .qa-thanks {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+        }
+
+        /* Ambient glow orbs (purely decorative, no overflow) */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.12;
+        }
+
+        .orb-cyan { background: var(--accent-cyan); }
+        .orb-magenta { background: var(--accent-magenta); }
+    </style>
+</head>
+<body>
+
+    <!-- Progress bar -->
+    <div id="progress-bar" style="width: 10%;"></div>
+
+    <!-- Navigation dots -->
+    <nav id="nav-dots" aria-label="幻灯片导航"></nav>
+
+    <!-- =====================================================
+         SLIDE 1: 封面 (Title Slide)
+         ===================================================== -->
+    <section class="slide" id="slide-1" aria-label="封面">
+        <canvas id="particle-canvas"></canvas>
+
+        <!-- Ambient orbs -->
+        <div class="orb orb-cyan" style="width: 40vw; height: 40vw; top: -10%; left: -5%;"></div>
+        <div class="orb orb-magenta" style="width: 30vw; height: 30vw; bottom: -5%; right: 5%;"></div>
+
+        <div class="title-slide-content">
+            <div class="reveal" style="margin-bottom: var(--element-gap);">
+                <span class="badge badge-cyan">AI × PM × 2025</span>
+            </div>
+
+            <h1 class="main-title reveal" style="transition-delay: 0.1s;">
+                AI 赋能<br>
+                <span class="highlight">产品经理</span>
+            </h1>
+
+            <p class="subtitle reveal" style="transition-delay: 0.2s;">
+                工作流重塑与实践 — 从需求发掘到复盘迭代<br>的全链路敏捷迭代指南
+            </p>
+
+            <div class="glow-line reveal" style="transition-delay: 0.3s; width: clamp(60px, 15vw, 160px);"></div>
+
+            <p class="presenter-info reveal" style="transition-delay: 0.4s;">
+                产品经理分享会
+            </p>
+        </div>
+
+        <div class="keyboard-hint">
+            <kbd class="key">↓</kbd>
+            <span style="font-size: var(--small-size);">滚动或按键翻页</span>
+        </div>
+
+        <div class="slide-counter"><span>01</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 2: AI 时代的 PM 新定位
+         ===================================================== -->
+    <section class="slide" id="slide-2" aria-label="PM新定位">
+        <div class="orb orb-cyan" style="width: 25vw; height: 25vw; top: 10%; right: 15%; opacity: 0.08;"></div>
+
+        <div class="slide-content">
+            <p class="slide-label reveal">02 — 新定位</p>
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">工具在变，<span class="accent-cyan">核心价值</span>不变</h2>
+
+            <div class="glow-line reveal" style="transition-delay: 0.15s;"></div>
+
+            <div class="two-col stagger" style="flex: 1; align-items: center; margin-top: var(--element-gap);">
+                <!-- Left: 3 key points -->
+                <div class="col-left">
+                    <div class="card card-cyan reveal">
+                        <p style="font-size: var(--small-size); color: var(--accent-cyan); font-family: var(--font-mono); margin-bottom: 0.4em;">坚守核心价值</p>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5;">洞察真实需求、精准定义产品、<strong style="color: var(--text-primary);">为业务结果负责</strong></p>
+                    </div>
+
+                    <div class="card reveal" style="transition-delay: 0.1s;">
+                        <p style="font-size: var(--small-size); color: var(--accent-yellow); font-family: var(--font-mono); margin-bottom: 0.4em;">角色定位升级</p>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5;">告别深陷画图写文档的苦力执行者<br>进化为 <strong style="color: var(--text-primary);">驾驭全链路 AI 工具的指挥官</strong></p>
+                    </div>
+
+                    <div class="card reveal" style="transition-delay: 0.2s;">
+                        <p style="font-size: var(--small-size); color: var(--accent-magenta); font-family: var(--font-mono); margin-bottom: 0.4em;">全链路闭环重塑</p>
+                        <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5;">AI 渗透至每个工作节点，提效不替代</p>
+                    </div>
+                </div>
+
+                <!-- Right: Workflow cycle -->
+                <div class="col-right reveal-right" style="transition-delay: 0.3s;">
+                    <div class="workflow-cycle">
+                        <div class="cycle-item active">
+                            <div class="cycle-dot"></div>
+                            <div class="cycle-label">需求调研</div>
+                        </div>
+                        <div class="cycle-connector"></div>
+                        <div class="cycle-item active">
+                            <div class="cycle-dot"></div>
+                            <div class="cycle-label">产品定义</div>
+                        </div>
+                        <div class="cycle-connector"></div>
+                        <div class="cycle-item active">
+                            <div class="cycle-dot"></div>
+                            <div class="cycle-label">研发协同</div>
+                        </div>
+                        <div class="cycle-connector"></div>
+                        <div class="cycle-item active">
+                            <div class="cycle-dot"></div>
+                            <div class="cycle-label">数据复盘</div>
+                        </div>
+                    </div>
+                    <p style="font-size: var(--small-size); color: var(--text-muted); text-align: center; margin-top: var(--element-gap); font-family: var(--font-mono);">← AI 渗透每个节点 →</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>02</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 3: 步骤一 — 需求发掘 🟢 能
+         ===================================================== -->
+    <section class="slide" id="slide-3" aria-label="需求调研-能">
+        <div class="slide-content">
+            <div style="display: flex; align-items: center; gap: var(--element-gap); margin-bottom: var(--element-gap);" class="reveal">
+                <p class="slide-label" style="margin: 0;">03 — 步骤一：需求发掘与调研</p>
+                <span class="badge badge-cyan">🟢 AI 的能</span>
+            </div>
+
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">高效外包<span class="accent-cyan">案头调研</span>与信息处理</h2>
+
+            <div class="glow-line reveal" style="transition-delay: 0.15s;"></div>
+
+            <!-- Highlight tool -->
+            <div class="reveal" style="transition-delay: 0.2s; margin-bottom: var(--element-gap);">
+                <div style="display: inline-flex; align-items: center; gap: 0.75em; padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.75rem, 1.5vw, 1.2rem); background: rgba(0,255,204,0.06); border: 1px solid rgba(0,255,204,0.25); border-radius: 4px;">
+                    <span style="font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-muted);">首推工具</span>
+                    <span style="font-family: var(--font-display); font-size: var(--body-size); font-weight: 600; color: var(--accent-cyan);">Claude 3.5 Sonnet</span>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono);">低幻觉 · 逻辑严密 · 客观批判</span>
+                </div>
+            </div>
+
+            <!-- Tool cards -->
+            <div class="tool-grid stagger">
+                <div class="tool-card reveal">
+                    <div class="tool-card-icon">📄</div>
+                    <div class="tool-card-name">极速提取</div>
+                    <div class="tool-card-desc">万字研报 / 财报 → 核心商业策略，分钟级完成</div>
+                </div>
+                <div class="tool-card reveal">
+                    <div class="tool-card-icon">🎭</div>
+                    <div class="tool-card-name">角色辩论</div>
+                    <div class="tool-card-desc">设定特定角色进行"辩论式探讨"，深挖用户痛点</div>
+                </div>
+                <div class="tool-card reveal">
+                    <div class="tool-card-icon">🔍</div>
+                    <div class="tool-card-name">真实信源</div>
+                    <div class="tool-card-desc">配合 Perplexity / 秘塔 AI 进行实时联网检索</div>
+                </div>
+                <div class="tool-card reveal">
+                    <div class="tool-card-icon">⚖️</div>
+                    <div class="tool-card-name">批判性意见</div>
+                    <div class="tool-card-desc">不盲从，敢质疑，有效避免"确认偏差"陷阱</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>03</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 4: 步骤一 — 需求发掘 🔴 盲区
+         ===================================================== -->
+    <section class="slide" id="slide-4" aria-label="需求调研-盲区">
+        <div class="orb orb-magenta" style="width: 30vw; height: 30vw; top: -5%; right: -5%; opacity: 0.1;"></div>
+
+        <div class="slide-content">
+            <div style="display: flex; align-items: center; gap: var(--element-gap); margin-bottom: var(--element-gap);" class="reveal">
+                <p class="slide-label" style="margin: 0;">04 — 步骤一：需求发掘与调研</p>
+                <span class="badge badge-magenta">🔴 AI 的盲区</span>
+            </div>
+
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">深度竞品分析：<span class="accent-magenta">无法被替代</span>的"亲手体验"</h2>
+
+            <div class="glow-line glow-line-magenta reveal" style="transition-delay: 0.15s;"></div>
+
+            <div class="warning-banner reveal" style="transition-delay: 0.2s;">
+                🚨 &nbsp;AI 缺乏物理真实环境下的操作感知，没有"产品手感"
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--element-gap); margin-top: var(--element-gap);" class="stagger">
+                <div class="card card-magenta reveal">
+                    <p style="font-size: var(--small-size); color: var(--accent-magenta); font-family: var(--font-mono); margin-bottom: 0.5em;">真实痛点案例</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary); line-height: 1.5;">以 MOI 新增"模型管理"为例 — AI 无法仅凭公开文档还原底层<strong style="color: var(--text-primary);">交互异常流和设计逻辑</strong></p>
+                </div>
+
+                <div class="card reveal" style="transition-delay: 0.1s;">
+                    <p style="font-size: var(--small-size); color: var(--accent-cyan); font-family: var(--font-mono); margin-bottom: 0.5em;">正确姿势</p>
+                    <ul class="bullet-list" style="gap: 0.4em;">
+                        <li><span>PM 亲自上手跑通全流程</span></li>
+                        <li><span>截图录屏留存原始资料</span></li>
+                        <li><span>将零散资料喂给 AI 归纳</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reveal" style="transition-delay: 0.3s; margin-top: var(--element-gap);">
+                <p style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono);">
+                    ⚠️ &nbsp;AI 只能做<span style="color: var(--text-secondary);">后置整理</span>，不能<span style="color: var(--accent-magenta);">前置生成</span>竞品体验洞察
+                </p>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>04</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 5: 步骤二&三 — 定义与研发 🟢 能
+         ===================================================== -->
+    <section class="slide" id="slide-5" aria-label="定义研发-能">
+        <div class="slide-content">
+            <div style="display: flex; align-items: center; gap: var(--element-gap); margin-bottom: var(--element-gap);" class="reveal">
+                <p class="slide-label" style="margin: 0;">05 — 步骤二&三：定义与研发</p>
+                <span class="badge badge-cyan">🟢 AI 的能</span>
+            </div>
+
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">打破瀑布流：<span class="accent-cyan">PRD 与原型</span>的双向驱动</h2>
+
+            <div class="glow-line reveal" style="transition-delay: 0.15s;"></div>
+
+            <!-- 3-column tool chain -->
+            <div class="three-col stagger" style="margin-top: var(--element-gap); flex: 1; align-items: stretch;">
+                <div class="chain-card reveal">
+                    <div class="chain-number">01 / 文档</div>
+                    <div class="chain-tool">Gemini</div>
+                    <div class="chain-subtitle">长效记忆，越用越懂你的 PM 身份、做事风格与业务线语境</div>
+                    <ul class="bullet-list" style="margin-top: auto; gap: 0.3em;">
+                        <li><span>极速搭骨架</span></li>
+                        <li><span>告别重复预设</span></li>
+                    </ul>
+                </div>
+
+                <div class="chain-card reveal" style="transition-delay: 0.15s;">
+                    <div class="chain-number">02 / 开发</div>
+                    <div class="chain-tool">Cursor</div>
+                    <div class="chain-subtitle">将 PRD 直接喂给 Cursor，生成带真实交互的前端原型</div>
+                    <ul class="bullet-list" style="margin-top: auto; gap: 0.3em;">
+                        <li><span>彻底淘汰 Axure / 墨刀</span></li>
+                        <li><span>真实可交互</span></li>
+                    </ul>
+                </div>
+
+                <div class="chain-card reveal" style="transition-delay: 0.3s;">
+                    <div class="chain-number">03 / 交付</div>
+                    <div class="chain-tool">Vercel</div>
+                    <div class="chain-subtitle">一键部署，附带在线真实交互链接</div>
+                    <ul class="bullet-list" style="margin-top: auto; gap: 0.3em;">
+                        <li><span>研发 & UI 所见即所得</span></li>
+                        <li><span>消灭沟通损耗</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>05</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 6: 研发协同实战 — 代码反向验证文档
+         ===================================================== -->
+    <section class="slide" id="slide-6" aria-label="实战案例">
+        <div class="orb orb-cyan" style="width: 25vw; height: 25vw; bottom: 5%; left: 5%; opacity: 0.07;"></div>
+
+        <div class="slide-content">
+            <p class="slide-label reveal">06 — 研发协同实战案例</p>
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">消灭空想盲区，<span class="accent-cyan">验证文档严密性</span></h2>
+
+            <div class="glow-line reveal" style="transition-delay: 0.15s;"></div>
+
+            <!-- Bidirectional flow -->
+            <div class="bi-flow reveal" style="transition-delay: 0.2s; margin-top: var(--element-gap);">
+                <div class="bi-box">
+                    <div class="bi-box-label">PRD 文档</div>
+                    <div class="prd-code">
+                        <div><span class="comment"># 报销 Agent 核心流程</span></div>
+                        <div><span class="key-word">功能：</span><span class="value">智能单据识别</span></div>
+                        <div><span class="key-word">边界：</span><span class="value">异常状态处理</span></div>
+                        <div><span class="key-word">规则：</span><span class="value">审批逻辑链路</span></div>
+                        <div style="margin-top: 0.5em;"><span class="comment"># 用 Cursor 复刻，发现</span></div>
+                        <div><span class="comment"># 空想中的逻辑漏洞</span></div>
+                    </div>
+                </div>
+
+                <div class="bi-arrow">
+                    <span>↔</span>
+                    <span>双向驱动</span>
+                </div>
+
+                <div class="bi-box">
+                    <div class="bi-box-label" style="color: var(--accent-yellow);">Cursor 原型代码</div>
+                    <div class="prd-code">
+                        <div><span class="comment">// 报销助手 Agent</span></div>
+                        <div><span class="key-word">从 0 生成</span></div>
+                        <div><span class="value">→ 仅凭 PRD</span></div>
+                        <div style="margin-top: 0.5em;"><span class="comment">// 暴露文档盲点：</span></div>
+                        <div><span class="value">→ 边界条件</span></div>
+                        <div><span class="value">→ 逻辑细节</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits -->
+            <div style="display: flex; gap: var(--element-gap); margin-top: var(--element-gap);" class="stagger">
+                <div class="card reveal" style="flex: 1;">
+                    <p style="font-size: var(--small-size); color: var(--accent-cyan); font-family: var(--font-mono); margin-bottom: 0.3em;">边写边做</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary);">打破传统瀑布流，边利用代码开发原型、边写 PRD</p>
+                </div>
+                <div class="card reveal" style="transition-delay: 0.1s; flex: 1;">
+                    <p style="font-size: var(--small-size); color: var(--accent-yellow); font-family: var(--font-mono); margin-bottom: 0.3em;">核心收益</p>
+                    <p style="font-size: var(--small-size); color: var(--text-secondary);">发现"纯靠脑子空想"根本想不到的逻辑细节与边界条件</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>06</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 7: 步骤二&三 — 定义与研发 🔴 盲区
+         ===================================================== -->
+    <section class="slide" id="slide-7" aria-label="定义研发-盲区">
+        <div class="orb orb-magenta" style="width: 28vw; height: 28vw; top: -8%; left: -5%; opacity: 0.09;"></div>
+
+        <div class="slide-content">
+            <div style="display: flex; align-items: center; gap: var(--element-gap); margin-bottom: var(--element-gap);" class="reveal">
+                <p class="slide-label" style="margin: 0;">07 — 步骤二&三：定义与研发</p>
+                <span class="badge badge-magenta">🔴 AI 的盲区</span>
+            </div>
+
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">审美与用户体验：<span class="accent-magenta">AI 只是"毛坯房"建造者</span></h2>
+
+            <div class="glow-line glow-line-magenta reveal" style="transition-delay: 0.15s;"></div>
+
+            <div class="warning-banner reveal" style="transition-delay: 0.2s;">
+                ⚠️ &nbsp;大模型对"美"没有直觉，缺乏人类的同理心、留白感知和视觉层级判断
+            </div>
+
+            <!-- Before/After contrast -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--element-gap); margin-top: var(--element-gap);" class="stagger">
+                <div class="card card-magenta reveal">
+                    <p style="font-size: var(--small-size); color: var(--accent-magenta); font-family: var(--font-mono); margin-bottom: 0.5em;">🏚 AI 给的：毛坯房</p>
+                    <ul class="bullet-list magenta" style="gap: 0.3em;">
+                        <li><span>"能用"但"不好用"</span></li>
+                        <li><span>按钮位置不顺手</span></li>
+                        <li><span>微交互不自然</span></li>
+                        <li><span>情感化传达缺失</span></li>
+                    </ul>
+                </div>
+
+                <div class="card card-cyan reveal" style="transition-delay: 0.15s;">
+                    <p style="font-size: var(--small-size); color: var(--accent-cyan); font-family: var(--font-mono); margin-bottom: 0.5em;">🏠 目标：精装修</p>
+                    <ul class="bullet-list" style="gap: 0.3em;">
+                        <li><span>PM 的审美把控介入</span></li>
+                        <li><span>专业设计师精雕细琢</span></li>
+                        <li><span>UX 细节逐一打磨</span></li>
+                        <li><span>情感化体验完整呈现</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="reveal" style="transition-delay: 0.35s; margin-top: var(--element-gap);">
+                <p style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono);">
+                    AI 负责超低成本拉齐<span style="color: var(--text-secondary);">功能逻辑</span>，"精装修"必须依赖 PM 审美把控与专业设计师介入
+                </p>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>07</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 8: 步骤四 — 数据复盘与迭代 / PPT 排版自动化
+         ===================================================== -->
+    <section class="slide" id="slide-8" aria-label="复盘迭代">
+        <div class="orb orb-cyan" style="width: 22vw; height: 22vw; top: 5%; right: 5%; opacity: 0.06;"></div>
+
+        <div class="slide-content">
+            <p class="slide-label reveal">08 — 步骤四：数据复盘与迭代</p>
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;">告别排版焦虑，专注<span class="accent-cyan">结构化表达</span></h2>
+
+            <div class="glow-line reveal" style="transition-delay: 0.15s;"></div>
+
+            <div class="flow-diagram stagger" style="margin-top: var(--element-gap);">
+                <!-- Step 1 -->
+                <div class="flow-step reveal">
+                    <div class="flow-step-num">Step 01</div>
+                    <div class="flow-step-content">
+                        <div class="flow-step-title">骨架搭建</div>
+                        <div class="flow-step-desc">利用 <span style="color: var(--accent-cyan);">Gemini</span> 构思精细大纲，强制按页规划主旨和视觉元素</div>
+                    </div>
+                </div>
+
+                <!-- Arrow down -->
+                <div class="reveal" style="transition-delay: 0.1s; margin-left: clamp(2rem, 4vw, 3.5rem); height: 14px; display: flex; align-items: center;">
+                    <div style="height: 100%; width: 1px; background: linear-gradient(to bottom, var(--accent-cyan), transparent); opacity: 0.4;"></div>
+                    <span style="font-size: var(--small-size); color: var(--text-muted); font-family: var(--font-mono); margin-left: 0.5em;">↓ 工具二选一</span>
+                </div>
+
+                <!-- Step 2: branch -->
+                <div class="flow-branch stagger">
+                    <div class="branch-option branch-a reveal">
+                        <div class="branch-tag">方案 A &nbsp;日常高频</div>
+                        <div class="branch-desc">
+                            <strong style="color: var(--text-primary);">Kimi Slides</strong><br>
+                            中文排版极佳，支持富文本直接编辑，二次调整无压力
+                        </div>
+                    </div>
+                    <div class="branch-option branch-b reveal" style="transition-delay: 0.15s;">
+                        <div class="branch-tag">方案 B &nbsp;极致视觉</div>
+                        <div class="branch-desc">
+                            <strong style="color: var(--text-primary);">frontend-slides</strong><br>
+                            输出酷炫动画 HTML 幻灯片，极具极客范儿（有代码门槛）
+                        </div>
+                    </div>
+                </div>
+
+                <!-- High-level play -->
+                <div class="reveal" style="transition-delay: 0.3s;">
+                    <div style="display: flex; align-items: center; gap: 0.75em; padding: clamp(0.4rem, 1vw, 0.7rem) clamp(0.6rem, 1.2vw, 1rem); background: rgba(255, 221, 0, 0.05); border: 1px solid rgba(255, 221, 0, 0.2); border-radius: 4px; margin-top: var(--element-gap);">
+                        <span style="color: var(--accent-yellow); font-family: var(--font-mono); font-size: var(--small-size);">高阶玩法</span>
+                        <span style="color: var(--text-secondary); font-size: var(--small-size);">让 AI 根据听众（老板 / 技术）定制每一页的演讲逐字稿</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>08</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 9: PM 避坑指南
+         ===================================================== -->
+    <section class="slide" id="slide-9" aria-label="避坑指南">
+        <div class="slide-content">
+            <p class="slide-label reveal">09 — PM 避坑指南</p>
+            <h2 class="slide-title reveal" style="transition-delay: 0.1s;"><span class="accent-cyan">AI 时代</span>的生存法则</h2>
+
+            <div class="glow-line reveal" style="transition-delay: 0.15s;"></div>
+
+            <div class="rule-list stagger" style="margin-top: var(--element-gap);">
+                <div class="rule-item reveal">
+                    <div class="rule-icon">🎯</div>
+                    <div class="rule-body">
+                        <div class="rule-title">你是决策者，AI 是副驾驶</div>
+                        <div class="rule-desc">坚决不做"甩手掌柜"，必须人工复核关键逻辑，为最终结果负责</div>
+                    </div>
+                </div>
+
+                <div class="rule-item reveal" style="transition-delay: 0.15s;">
+                    <div class="rule-icon">🔧</div>
+                    <div class="rule-body">
+                        <div class="rule-title">掌握 Prompt 公式</div>
+                        <div class="rule-desc">
+                            <span style="color: var(--accent-cyan);">角色设定</span> +
+                            <span style="color: var(--accent-yellow);">背景信息</span> +
+                            <span style="color: var(--text-primary);">具体任务</span> +
+                            <span style="color: var(--accent-magenta);">输出要求</span>
+                            &nbsp;— 利用大模型记忆功能逐渐固化前两项
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rule-item reveal" style="transition-delay: 0.3s; border-color: rgba(255,0,170,0.2); background: rgba(255,0,170,0.03);">
+                    <div class="rule-icon">🔒</div>
+                    <div class="rule-body">
+                        <div class="rule-title" style="color: var(--accent-magenta);">死守数据红线</div>
+                        <div class="rule-desc">严禁将<strong style="color: var(--text-primary);">核心业务机密</strong>、未脱敏的<strong style="color: var(--text-primary);">用户隐私数据（PII）</strong>输入公共大模型</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide-counter"><span>09</span> / 10</div>
+    </section>
+
+    <!-- =====================================================
+         SLIDE 10: Q&A / 结束页
+         ===================================================== -->
+    <section class="slide" id="slide-10" aria-label="问答">
+        <canvas id="particle-canvas-2"></canvas>
+
+        <div class="orb orb-cyan" style="width: 35vw; height: 35vw; top: -10%; right: -10%; opacity: 0.1;"></div>
+        <div class="orb orb-magenta" style="width: 25vw; height: 25vw; bottom: -5%; left: 5%; opacity: 0.1;"></div>
+
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="reveal">
+                <p class="slide-label" style="text-align: center; margin-bottom: var(--content-gap);">感谢聆听</p>
+            </div>
+
+            <h2 class="qa-title reveal" style="transition-delay: 0.1s;">
+                Q <span style="color: var(--accent-cyan);">&</span> A
+            </h2>
+
+            <div class="qa-divider reveal" style="transition-delay: 0.2s;"></div>
+
+            <blockquote class="qa-quote reveal" style="transition-delay: 0.3s;">
+                未来的产品经理不会被 AI 淘汰，但一定会被<span style="color: var(--accent-cyan);">擅长使用全链路 AI 工具</span>的同行淘汰。
+            </blockquote>
+
+            <div class="qa-divider reveal" style="transition-delay: 0.4s;"></div>
+
+            <p class="qa-thanks reveal" style="transition-delay: 0.5s;">AI × PM · 工作流重塑与实践</p>
+        </div>
+
+        <div class="slide-counter"><span>10</span> / 10</div>
+    </section>
+
+    <script>
+        /* ===========================================
+           PARTICLE SYSTEM
+           Lightweight canvas particles for title/closing slides
+           =========================================== */
+        class ParticleSystem {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.animFrame = null;
+                this.resize();
+                this.init();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                if (!this.canvas) return;
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            init() {
+                this.particles = [];
+                const count = Math.min(60, Math.floor(window.innerWidth / 25));
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 0.4,
+                        vy: (Math.random() - 0.5) * 0.4,
+                        size: Math.random() * 1.5 + 0.5,
+                        opacity: Math.random() * 0.5 + 0.1,
+                        color: Math.random() > 0.7 ? '#ff00aa' : '#00ffcc'
+                    });
+                }
+            }
+
+            drawConnections() {
+                const ctx = this.ctx;
+                for (let i = 0; i < this.particles.length; i++) {
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const dx = this.particles[i].x - this.particles[j].x;
+                        const dy = this.particles[i].y - this.particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(0, 255, 204, ${0.08 * (1 - dist / 100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(this.particles[i].x, this.particles[i].y);
+                            ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            animate() {
+                if (!this.canvas) return;
+                const ctx = this.ctx;
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                this.drawConnections();
+
+                this.particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.opacity;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                });
+
+                this.animFrame = requestAnimationFrame(() => this.animate());
+            }
+
+            start() { if (!this.animFrame) this.animate(); }
+            stop() {
+                if (this.animFrame) {
+                    cancelAnimationFrame(this.animFrame);
+                    this.animFrame = null;
+                }
+            }
+        }
+
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Manages navigation, animations, progress bar
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = Array.from(document.querySelectorAll('.slide'));
+                this.totalSlides = this.slides.length;
+                this.currentIndex = 0;
+                this.isScrolling = false;
+                this.scrollCooldown = 800;
+
+                this.progressBar = document.getElementById('progress-bar');
+                this.navDotsContainer = document.getElementById('nav-dots');
+
+                this.particles1 = new ParticleSystem('particle-canvas');
+                this.particles2 = new ParticleSystem('particle-canvas-2');
+
+                this.buildNavDots();
+                this.setupObserver();
+                this.setupKeyboard();
+                this.setupWheel();
+                this.setupTouch();
+
+                // Mark first slide as visible immediately
+                this.slides[0].classList.add('visible');
+                this.particles1.start();
+                this.updateProgress(0);
+            }
+
+            buildNavDots() {
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `跳转到第 ${i + 1} 页`);
+                    dot.addEventListener('click', () => this.goTo(i));
+                    this.navDotsContainer.appendChild(dot);
+                });
+            }
+
+            setupObserver() {
+                const options = {
+                    threshold: 0.5,
+                    rootMargin: '0px'
+                };
+
+                this.observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const idx = this.slides.indexOf(entry.target);
+                            this.currentIndex = idx;
+                            this.updateProgress(idx);
+
+                            // Manage particle animation
+                            if (idx === 0) this.particles1.start();
+                            else this.particles1.stop();
+
+                            if (idx === this.totalSlides - 1) this.particles2.start();
+                            else this.particles2.stop();
+                        }
+                    });
+                }, options);
+
+                this.slides.forEach(slide => this.observer.observe(slide));
+            }
+
+            updateProgress(idx) {
+                const pct = ((idx + 1) / this.totalSlides) * 100;
+                if (this.progressBar) {
+                    this.progressBar.style.width = pct + '%';
+                }
+
+                // Update nav dots
+                const dots = this.navDotsContainer.querySelectorAll('.nav-dot');
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === idx);
+                });
+            }
+
+            goTo(idx) {
+                if (idx < 0 || idx >= this.totalSlides) return;
+                this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+            }
+
+            setupKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    switch (e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goTo(this.currentIndex + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goTo(this.currentIndex - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goTo(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goTo(this.totalSlides - 1);
+                            break;
+                    }
+                });
+            }
+
+            setupWheel() {
+                document.addEventListener('wheel', (e) => {
+                    if (this.isScrolling) return;
+                    this.isScrolling = true;
+                    if (e.deltaY > 0) {
+                        this.goTo(this.currentIndex + 1);
+                    } else {
+                        this.goTo(this.currentIndex - 1);
+                    }
+                    setTimeout(() => { this.isScrolling = false; }, this.scrollCooldown);
+                }, { passive: true });
+            }
+
+            setupTouch() {
+                let touchStartY = 0;
+                document.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const delta = touchStartY - e.changedTouches[0].clientY;
+                    if (Math.abs(delta) > 50) {
+                        if (delta > 0) this.goTo(this.currentIndex + 1);
+                        else this.goTo(this.currentIndex - 1);
+                    }
+                }, { passive: true });
+            }
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>
