@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能报销助手 Agent · Paper & Ink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,500;1,8..60,300;1,8..60,400&display=swap" rel="stylesheet">
+  <style>
+
+    /* ===========================================
+       DESIGN TOKENS — Paper & Ink
+       =========================================== */
+    :root {
+      --bg:            #faf9f7;
+      --bg-dark:       #f3f1ec;
+      --bg-darker:     #ece9e2;
+      --ink:           #1a1a1a;
+      --ink-soft:      #444;
+      --ink-muted:     #777;
+      --ink-faint:     #bbb;
+      --crimson:       #c41e3a;
+      --crimson-faint: rgba(196, 30, 58, 0.07);
+      --crimson-mid:   rgba(196, 30, 58, 0.15);
+      --sage:          #4a7a5a;
+      --sage-faint:    rgba(74, 122, 90, 0.07);
+      --sage-mid:      rgba(74, 122, 90, 0.18);
+      --rule:          #d4cfca;
+      --rule-dark:     #b8b2ab;
+
+      --font-serif:    'Cormorant Garamond', Georgia, serif;
+      --font-body:     'Source Serif 4', Georgia, serif;
+
+      /* All sizes use clamp() — mandatory for viewport fitting */
+      --title-size:    clamp(2.6rem, 6.5vw, 6rem);
+      --h2-size:       clamp(1.5rem, 3.5vw, 3rem);
+      --h3-size:       clamp(1rem, 2vw, 1.5rem);
+      --body-size:     clamp(0.78rem, 1.3vw, 1rem);
+      --small-size:    clamp(0.65rem, 0.95vw, 0.78rem);
+      --caption-size:  clamp(0.55rem, 0.8vw, 0.68rem);
+      --quiz-text:     clamp(1.64rem, 3vw, 2.1rem);
+
+      --slide-pad-x:   clamp(2.5rem, 7vw, 8rem);
+      --slide-pad-y:   clamp(1.8rem, 4.5vh, 4.5rem);
+      --gap:           clamp(0.55rem, 1.4vh, 1.3rem);
+      --elem-gap:      clamp(0.3rem, 0.8vh, 0.65rem);
+
+      --ease-expo:     cubic-bezier(0.16, 1, 0.3, 1);
+      --dur:           0.7s;
+    }
+
+    /* ===========================================
+       RESET & BASE
+       =========================================== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--ink);
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    /* ===========================================
+       SLIDE — Each = exactly 100vh, no overflow
+       =========================================== */
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      background: var(--bg);
+    }
+
+    /* Slides where content starts at top */
+    .slide-top { justify-content: flex-start; }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: 100%;
+      overflow: hidden;
+      padding: var(--slide-pad-y) var(--slide-pad-x);
+      gap: var(--gap);
+    }
+
+    /* Crimson top line on every slide */
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--crimson) 0%, transparent 65%);
+      z-index: 10;
+    }
+
+    /* ===========================================
+       RESPONSIVE BREAKPOINTS
+       =========================================== */
+    @media (max-height: 700px) {
+      :root {
+        --slide-pad-y:  clamp(1.2rem, 3vh, 2.5rem);
+        --slide-pad-x:  clamp(1.8rem, 5vw, 5rem);
+        --gap:          clamp(0.4rem, 1vh, 0.9rem);
+        --h2-size:      clamp(1.3rem, 3vw, 2.2rem);
+        --quiz-text:    clamp(0.72rem, 1.2vw, 0.9rem);
+      }
+    }
+
+    @media (max-height: 600px) {
+      :root {
+        --slide-pad-y:  clamp(0.8rem, 2.5vh, 1.5rem);
+        --slide-pad-x:  clamp(1.2rem, 4vw, 3rem);
+        --gap:          clamp(0.3rem, 0.8vh, 0.65rem);
+        --title-size:   clamp(2rem, 5.5vw, 3.8rem);
+        --h2-size:      clamp(1.1rem, 2.8vw, 1.9rem);
+        --body-size:    clamp(0.7rem, 1.1vw, 0.88rem);
+      }
+      .nav-dots, .keyboard-hint, .section-mark .ornament { display: none; }
+    }
+
+    @media (max-height: 500px) {
+      :root {
+        --slide-pad-y:  clamp(0.5rem, 1.5vh, 1rem);
+        --title-size:   clamp(1.8rem, 4.5vw, 3rem);
+        --h2-size:      clamp(1rem, 2.5vw, 1.6rem);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .two-col, .pain-grid, .reason-grid, .compare-wrap, .value-grid { flex-direction: column !important; grid-template-columns: 1fr !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
+    }
+
+    /* ===========================================
+       ENTRANCE ANIMATIONS
+       =========================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity var(--dur) var(--ease-expo),
+                  transform var(--dur) var(--ease-expo);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-28px);
+      transition: opacity var(--dur) var(--ease-expo),
+                  transform var(--dur) var(--ease-expo);
+    }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(28px);
+      transition: opacity var(--dur) var(--ease-expo),
+                  transform var(--dur) var(--ease-expo);
+    }
+    .reveal-fade {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .slide.visible .reveal,
+    .slide.visible .reveal-left,
+    .slide.visible .reveal-right { opacity: 1; transform: none; }
+    .slide.visible .reveal-fade   { opacity: 1; }
+
+    /* Stagger delays */
+    .d1 { transition-delay: 0.05s; }
+    .d2 { transition-delay: 0.18s; }
+    .d3 { transition-delay: 0.31s; }
+    .d4 { transition-delay: 0.44s; }
+    .d5 { transition-delay: 0.57s; }
+    .d6 { transition-delay: 0.70s; }
+    .d7 { transition-delay: 0.83s; }
+
+    /* ===========================================
+       PROGRESS BAR
+       =========================================== */
+    #progress {
+      position: fixed;
+      top: 0; left: 0;
+      width: 0%;
+      height: 2px;
+      background: var(--crimson);
+      z-index: 200;
+      transition: width 0.35s ease;
+    }
+
+    /* ===========================================
+       NAV DOTS
+       =========================================== */
+    .nav-dots {
+      position: fixed;
+      right: clamp(0.8rem, 2vw, 1.5rem);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(6px, 0.9vh, 10px);
+      z-index: 100;
+    }
+
+    .nav-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--rule-dark);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      border: none;
+      padding: 0;
+    }
+    .nav-dot.active {
+      background: var(--crimson);
+      transform: scale(1.5);
+    }
+
+    /* Slide counter */
+    #slide-counter {
+      position: fixed;
+      bottom: clamp(0.8rem, 2vh, 1.4rem);
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-serif);
+      font-size: var(--caption-size);
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: var(--ink-faint);
+      z-index: 100;
+    }
+
+    /* ===========================================
+       SHARED ELEMENTS
+       =========================================== */
+    .eyebrow {
+      font-family: var(--font-body);
+      font-size: var(--caption-size);
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--crimson);
+    }
+
+    .slide-h2 {
+      font-family: var(--font-serif);
+      font-size: var(--h2-size);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .slide-h2 em { font-style: italic; color: var(--crimson); }
+
+    .wide-rule {
+      width: 100%; height: 1px;
+      background: var(--rule);
+    }
+
+    .h-rule {
+      display: flex; align-items: center; gap: 10px;
+      margin: calc(var(--gap) * 0.2) 0;
+    }
+    .h-rule::before, .h-rule::after {
+      content: ''; flex: 1; max-width: 64px;
+      height: 1px; background: var(--rule);
+    }
+    .h-rule .dot {
+      width: 4px; height: 4px; border-radius: 50%;
+      background: var(--crimson); flex-shrink: 0;
+    }
+
+    /* Section mark (top-right corner) */
+    .section-mark {
+      position: absolute;
+      top: var(--slide-pad-y);
+      right: var(--slide-pad-x);
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .section-mark .num {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 300;
+      color: rgba(196, 30, 58, 0.1);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .section-mark .ornament { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+    .section-mark .ornament span { display: block; height: 1px; background: var(--rule); }
+
+    /* Page number (bottom-right) */
+    .page-num {
+      position: absolute;
+      bottom: clamp(1rem, 2.5vh, 1.8rem);
+      right: var(--slide-pad-x);
+      font-family: var(--font-serif);
+      font-size: var(--caption-size);
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: var(--ink-faint);
+    }
+
+    /* Pull quote */
+    .pull-quote {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: calc(var(--gap) * 0.6) 0;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .pull-quote .q-mark {
+      font-family: var(--font-serif);
+      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+      font-weight: 300;
+      color: var(--crimson);
+      opacity: 0.25;
+      line-height: 0.7;
+      flex-shrink: 0;
+    }
+    .pull-quote p {
+      font-family: var(--font-serif);
+      font-size: clamp(0.88rem, 1.7vw, 1.25rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    .pull-quote p em { color: var(--crimson); font-style: normal; font-weight: 600; }
+
+    /* Pain box (bordered left) */
+    .pain-box {
+      background: var(--crimson-faint);
+      border-left: 2px solid var(--crimson);
+      padding: clamp(0.55rem, 1.2vh, 0.9rem) clamp(0.8rem, 2vw, 1.3rem);
+      border-radius: 0 2px 2px 0;
+    }
+    .pain-box .label {
+      font-size: var(--caption-size);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 0.3em;
+    }
+    .pain-box p {
+      font-size: var(--body-size);
+      color: var(--ink-soft);
+      line-height: 1.55;
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    /* Feature list */
+    .feature-list {
+      list-style: none;
+      display: flex; flex-direction: column;
+      gap: calc(var(--gap) * 0.65);
+    }
+    .feature-list li {
+      display: flex; gap: 10px;
+      align-items: flex-start;
+      font-size: var(--body-size);
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+    .feature-list li::before {
+      content: '—';
+      color: var(--crimson);
+      font-family: var(--font-serif);
+      flex-shrink: 0;
+    }
+    .feature-list li strong { color: var(--ink); font-weight: 500; }
+
+    /* Cross mark (decorative) */
+    .cross {
+      position: absolute;
+      width: 18px; height: 18px;
+      opacity: 0.12;
+    }
+    .cross::before, .cross::after {
+      content: ''; position: absolute;
+      background: var(--ink);
+    }
+    .cross::before { width: 1px; height: 100%; left: 50%; transform: translateX(-50%); }
+    .cross::after  { height: 1px; width: 100%; top: 50%; transform: translateY(-50%); }
+
+    /* ==========================================
+       SLIDE I — COVER
+       ========================================== */
+    .cover .slide-content { justify-content: center; }
+
+    .cover-product {
+      font-family: var(--font-serif);
+      font-size: var(--title-size);
+      font-weight: 600;
+      line-height: 0.88;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .cover-product em { font-style: italic; color: var(--crimson); }
+
+    .cover-sub {
+      font-size: var(--h3-size);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink-soft);
+      line-height: 1.55;
+      max-width: 540px;
+    }
+
+    .cover-meta {
+      display: flex; align-items: center;
+      gap: 14px; flex-wrap: wrap;
+    }
+    .cover-meta span {
+      font-size: var(--small-size);
+      letter-spacing: 0.1em;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+    }
+    .cover-meta .sep {
+      width: 1px; height: 0.8em;
+      background: var(--rule);
+    }
+
+    /* Illustration cards (right side of cover) */
+    .cover-deco {
+      position: absolute;
+      right: var(--slide-pad-x);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(0.6rem, 1.5vw, 1.2rem);
+    }
+
+    .deco-card {
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,0.08));
+      transition: transform 0.4s var(--ease-expo);
+    }
+    .deco-card:hover { transform: translateY(-4px) !important; }
+
+    .deco-invoice {
+      width: clamp(90px, 15vw, 160px);
+      transform: rotate(-4deg);
+    }
+
+    .deco-email {
+      width: clamp(100px, 17vw, 175px);
+      transform: rotate(3.5deg);
+    }
+
+    .deco-invoice svg,
+    .deco-email svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .cover-deco { display: none; }
+    }
+
+    /* ==========================================
+       SLIDE II — 灵魂拷问
+       ========================================== */
+    .question-slide .slide-content {
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+      gap: var(--gap);
+    }
+
+    .big-emoji {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      animation: float-ud 2.4s ease-in-out infinite;
+    }
+    @keyframes float-ud {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .big-question {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 3.8vw, 3.2rem);
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--ink);
+      max-width: min(75vw, 780px);
+      letter-spacing: -0.01em;
+    }
+    .big-question em { font-style: italic; color: var(--crimson); }
+
+    .sub-question {
+      font-size: var(--h3-size);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink-soft);
+      max-width: min(60vw, 600px);
+      line-height: 1.65;
+    }
+    .sub-question em { color: var(--crimson); font-style: normal; font-weight: 500; }
+
+    /* ==========================================
+       SLIDE III — 血泪史
+       ========================================== */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.6rem, 1.5vw, 1.2rem);
+      margin-top: calc(var(--gap) * 0.5);
+    }
+
+    .pain-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: clamp(0.8rem, 1.8vw, 1.4rem);
+      display: flex; flex-direction: column;
+      gap: calc(var(--elem-gap) * 0.8);
+      transition: border-color 0.3s;
+    }
+    .pain-card:hover { border-color: var(--rule-dark); }
+
+    .pain-icon { font-size: clamp(1.4rem, 2.8vw, 2.2rem); }
+
+    .pain-title {
+      font-family: var(--font-serif);
+      font-size: var(--h3-size);
+      font-weight: 600;
+      color: var(--crimson);
+      line-height: 1.2;
+    }
+    .pain-desc {
+      font-size: var(--small-size);
+      color: var(--ink-soft);
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ==========================================
+       SLIDE IV — 产品思考
+       ========================================== */
+    .reason-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.8rem, 2vw, 1.6rem);
+      margin-top: calc(var(--gap) * 0.5);
+    }
+
+    .reason-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: clamp(0.9rem, 2vw, 1.6rem);
+      display: flex; flex-direction: column;
+      gap: calc(var(--elem-gap) * 0.8);
+    }
+
+    .reason-num {
+      font-size: var(--caption-size);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      font-weight: 400;
+    }
+    .reason-title {
+      font-family: var(--font-serif);
+      font-size: var(--h3-size);
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .reason-highlight {
+      font-size: var(--small-size);
+      color: var(--crimson);
+      font-weight: 400;
+      font-style: italic;
+      padding-bottom: calc(var(--elem-gap) * 0.7);
+      border-bottom: 1px solid var(--rule);
+      line-height: 1.45;
+    }
+    .reason-body {
+      font-size: var(--small-size);
+      color: var(--ink-soft);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+    .reason-body strong { color: var(--ink); font-weight: 500; }
+
+    /* ==========================================
+       QUIZ SLIDES (V / VI / VII) — Shared
+       ========================================== */
+    .slide-quiz { justify-content: flex-start; }
+
+    .quiz-wrap {
+      flex: 1;
+      display: flex; flex-direction: column;
+      padding: var(--slide-pad-y) var(--slide-pad-x);
+      gap: var(--elem-gap);
+      max-height: 100%;
+      overflow: hidden;
+    }
+
+    .quiz-header {
+      display: flex; align-items: baseline;
+      gap: clamp(0.6rem, 1.5vw, 1.2rem);
+      flex-shrink: 0;
+    }
+
+    .quiz-badge {
+      font-size: var(--caption-size);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      font-weight: 400;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .quiz-title {
+      font-family: var(--font-serif);
+      font-size: var(--h2-size);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .quiz-title em { font-style: italic; color: var(--crimson); }
+
+    .quiz-body {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.7rem, 1.8vw, 1.4rem);
+      overflow: hidden;
+    }
+    @media (max-width: 900px) { .quiz-body { grid-template-columns: 1fr; } }
+
+    .quiz-scenario {
+      background: var(--bg-dark);
+      border: 1px solid var(--rule);
+      border-left: 2px solid var(--crimson);
+      border-radius: 0 2px 2px 0;
+      padding: clamp(0.5rem, 1.2vw, 0.9rem);
+      font-size: var(--quiz-text);
+      color: var(--ink-soft);
+      line-height: 1.6;
+      overflow: hidden;
+    }
+    .s-label {
+      display: block;
+      font-family: var(--font-body);
+      font-size: var(--caption-size);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 0.6em;
+    }
+    .quiz-scenario b { color: var(--ink); font-weight: 500; }
+
+    .quiz-options {
+      display: flex; flex-direction: column;
+      gap: clamp(0.18rem, 0.45vh, 0.35rem);
+      overflow: hidden;
+    }
+
+    .opt {
+      display: flex; align-items: flex-start;
+      gap: 0.7em;
+      padding: clamp(0.28rem, 0.65vh, 0.48rem) clamp(0.6rem, 1vw, 0.85rem);
+      background: var(--bg-dark);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      font-size: var(--quiz-text);
+      color: var(--ink-soft);
+      line-height: 1.4;
+      transition: border-color 0.3s, background 0.3s, opacity 0.3s, color 0.3s;
+      cursor: default;
+    }
+    .opt-lbl {
+      font-family: var(--font-serif);
+      font-size: 0.9em;
+      font-weight: 600;
+      color: var(--crimson);
+      flex-shrink: 0;
+      opacity: 0.55;
+    }
+
+    /* Revealed states */
+    .opt.correct {
+      background: var(--sage-faint);
+      border-color: rgba(74, 122, 90, 0.35);
+      color: var(--ink);
+    }
+    .opt.correct .opt-lbl { color: var(--sage); opacity: 1; }
+    .opt.wrong { opacity: 0.28; }
+
+    .quiz-footer {
+      flex-shrink: 0;
+      display: flex; align-items: center;
+      gap: var(--gap);
+      overflow: hidden;
+    }
+
+    .reveal-btn {
+      font-family: var(--font-body);
+      font-size: var(--small-size);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--ink);
+      border: none;
+      border-radius: 2px;
+      padding: clamp(0.35rem, 0.9vh, 0.6rem) clamp(0.9rem, 2vw, 1.3rem);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .reveal-btn:hover:not(:disabled) {
+      background: var(--crimson);
+      transform: translateY(-1px);
+    }
+    .reveal-btn.done {
+      background: var(--sage);
+      cursor: default;
+    }
+
+    .ans-tip {
+      font-size: var(--small-size);
+      color: var(--ink-soft);
+      line-height: 1.65;
+      font-style: italic;
+      font-weight: 300;
+      max-width: 75%;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+    }
+    .ans-tip.show { opacity: 1; transform: none; }
+    .ans-tip .tip-ok { color: var(--sage); font-style: normal; font-weight: 500; }
+
+    /* ==========================================
+       SLIDE VIII — 传统 VS 理想
+       ========================================== */
+    .compare-wrap {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: clamp(0.5rem, 1.5vw, 1.2rem);
+      align-items: stretch;
+      margin-top: calc(var(--gap) * 0.5);
+    }
+
+    .cmp-col {
+      background: var(--bg-dark);
+      border-radius: 2px;
+      padding: clamp(0.75rem, 1.8vw, 1.4rem);
+    }
+    .cmp-col.old { border: 1px solid var(--crimson-mid); }
+    .cmp-col.new { border: 1px solid rgba(74, 122, 90, 0.3); background: var(--sage-faint); }
+
+    .cmp-title {
+      font-family: var(--font-serif);
+      font-size: var(--h3-size);
+      font-weight: 600;
+      margin-bottom: var(--elem-gap);
+      line-height: 1.2;
+    }
+    .cmp-col.old .cmp-title { color: var(--crimson); }
+    .cmp-col.new .cmp-title { color: var(--sage); }
+
+    .cmp-sub {
+      font-size: var(--caption-size);
+      font-style: italic;
+      margin-bottom: calc(var(--elem-gap) * 1.2);
+      color: var(--ink-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .cmp-list {
+      list-style: none;
+      display: flex; flex-direction: column;
+      gap: clamp(0.22rem, 0.55vh, 0.4rem);
+    }
+    .cmp-list li {
+      font-size: var(--small-size);
+      color: var(--ink-soft);
+      display: flex; align-items: flex-start;
+      gap: 0.5em; line-height: 1.5;
+    }
+    .cmp-col.old .cmp-list li::before { content: '→'; color: var(--crimson); opacity: 0.6; flex-shrink: 0; }
+    .cmp-col.new .cmp-list li::before { content: '→'; color: var(--sage); flex-shrink: 0; }
+
+    .compare-sep {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 0.5rem;
+    }
+    .compare-sep .vs-text {
+      font-family: var(--font-serif);
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      font-weight: 300;
+      color: var(--ink-faint);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      writing-mode: vertical-lr;
+      text-orientation: mixed;
+    }
+    .compare-sep .sep-line {
+      width: 1px; flex: 1;
+      background: var(--rule);
+      max-height: 60px;
+    }
+
+    /* ==========================================
+       SLIDE IX — Agent 登场
+       ========================================== */
+    .agent-slide .slide-content {
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .agent-slogan {
+      font-family: var(--font-serif);
+      font-size: clamp(1.4rem, 3.8vw, 3rem);
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      max-width: min(75vw, 700px);
+    }
+    .agent-slogan em { font-style: italic; color: var(--crimson); }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(0.3rem, 1vw, 0.8rem);
+      width: 100%;
+      max-width: min(88vw, 860px);
+    }
+    @media (max-width: 768px) { .flow-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .flow-card {
+      background: var(--bg-dark);
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      padding: clamp(0.65rem, 1.4vw, 1.1rem);
+      display: flex; flex-direction: column;
+      align-items: center; gap: 0.4em;
+      text-align: center;
+      position: relative;
+    }
+    .flow-card::after {
+      content: '→';
+      position: absolute;
+      right: calc(-1 * clamp(0.2rem, 0.5vw, 0.45rem));
+      top: 50%;
+      transform: translateY(-50%) translateX(50%);
+      color: var(--crimson);
+      font-size: var(--small-size);
+      font-family: var(--font-serif);
+      z-index: 1;
+      opacity: 0.5;
+    }
+    .flow-card:last-child::after { display: none; }
+
+    .flow-icon { font-size: clamp(1.4rem, 2.8vw, 2.1rem); }
+    .flow-num {
+      font-size: var(--caption-size);
+      letter-spacing: 0.2em;
+      color: var(--crimson);
+      font-weight: 400;
+    }
+    .flow-lbl {
+      font-size: var(--small-size);
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    /* ==========================================
+       SLIDE X — LIVE DEMO (dark terminal)
+       ========================================== */
+    .demo-slide {
+      background: #f0ede8; /* slightly warmer than bg */
+    }
+    .demo-slide .slide-content {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .demo-window {
+      width: min(88vw, 680px);
+      background: #1c1c1e;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 24px 72px rgba(0,0,0,0.2);
+    }
+    .demo-titlebar {
+      display: flex; align-items: center; gap: 6px;
+      padding: clamp(0.4rem, 1vh, 0.65rem) clamp(0.8rem, 1.5vw, 1.1rem);
+      background: #2c2c2e;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .dot-r { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+    .dot-y { width: 10px; height: 10px; border-radius: 50%; background: #ffbd2e; }
+    .dot-g { width: 10px; height: 10px; border-radius: 50%; background: #28c840; }
+    .demo-win-title {
+      font-family: var(--font-body);
+      font-size: var(--caption-size);
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.08em;
+      margin-left: 6px;
+    }
+    .demo-body {
+      padding: clamp(1rem, 2.5vh, 1.8rem) clamp(1rem, 2.5vw, 1.8rem);
+      display: flex; flex-direction: column;
+      align-items: center; gap: var(--gap);
+    }
+    .demo-label-badge {
+      font-family: var(--font-body);
+      font-size: var(--caption-size);
+      color: rgba(0, 212, 255, 0.8);
+      border: 1px solid rgba(0, 212, 255, 0.25);
+      border-radius: 3px;
+      padding: 0.25em 0.8em;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .demo-big-text {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 8vw, 6.5rem);
+      font-weight: 300;
+      color: #fff;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .demo-big-text em {
+      font-style: normal;
+      color: rgba(0, 212, 255, 0.9);
+    }
+    @keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .blink { animation: cursor-blink 1.1s step-end infinite; color: rgba(0,212,255,0.9); }
+
+    .demo-hint {
+      font-family: var(--font-body);
+      font-size: var(--small-size);
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.08em;
+    }
+
+    /* Demo caption below window */
+    .demo-caption {
+      font-size: var(--small-size);
+      color: var(--ink-muted);
+      font-style: italic;
+      margin-top: calc(var(--gap) * 0.5);
+    }
+
+    /* ==========================================
+       SLIDE XI — 价值与收益
+       ========================================== */
+    .value-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(0.8rem, 2vw, 1.6rem);
+      margin-top: calc(var(--gap) * 0.5);
+    }
+
+    .val-col {
+      background: var(--bg-dark);
+      border-radius: 2px;
+      padding: clamp(0.8rem, 1.8vw, 1.4rem);
+      display: flex; flex-direction: column;
+      gap: var(--elem-gap);
+    }
+    .val-col.emp { border: 1px solid rgba(196, 30, 58, 0.2); }
+    .val-col.fin { border: 1px solid rgba(74, 122, 90, 0.25); }
+
+    .val-col-title {
+      font-family: var(--font-serif);
+      font-size: var(--h3-size);
+      font-weight: 600;
+      margin-bottom: calc(var(--elem-gap) * 0.5);
+    }
+    .val-col.emp .val-col-title { color: var(--crimson); }
+    .val-col.fin .val-col-title { color: var(--sage); }
+
+    .val-metric {
+      border-radius: 2px;
+      padding: clamp(0.4rem, 0.9vh, 0.65rem);
+      display: flex; align-items: center; gap: 0.6em;
+    }
+    .val-col.emp .val-metric { background: var(--crimson-faint); border: 1px solid var(--crimson-mid); }
+    .val-col.fin .val-metric { background: var(--sage-faint);    border: 1px solid var(--sage-mid); }
+
+    .val-num {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 2.5vw, 1.9rem);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .val-col.emp .val-num { color: var(--crimson); }
+    .val-col.fin .val-num { color: var(--sage); }
+
+    .val-numlbl {
+      font-size: var(--small-size);
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+
+    .val-list {
+      list-style: none;
+      display: flex; flex-direction: column;
+      gap: clamp(0.2rem, 0.5vh, 0.38rem);
+    }
+    .val-list li {
+      font-size: var(--small-size);
+      color: var(--ink-soft);
+      display: flex; align-items: flex-start;
+      gap: 0.5em; line-height: 1.5;
+    }
+    .val-col.emp .val-list li .chk { color: var(--crimson); flex-shrink: 0; }
+    .val-col.fin .val-list li .chk { color: var(--sage);    flex-shrink: 0; }
+
+    /* ==========================================
+       SLIDE XII — Q&A
+       ========================================== */
+    .qa-slide .slide-content {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .qa-main {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 8vw, 7rem);
+      font-weight: 600;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .qa-main em { font-style: italic; color: var(--crimson); }
+
+    .qa-sub {
+      font-size: var(--h3-size);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink-soft);
+      max-width: min(60vw, 540px);
+      line-height: 1.65;
+    }
+
+    .qa-cta {
+      display: inline-flex; align-items: center; gap: 0.5em;
+      font-family: var(--font-body);
+      font-size: var(--small-size);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--ink);
+      border-radius: 2px;
+      padding: clamp(0.45rem, 1.1vh, 0.7rem) clamp(1.2rem, 3vw, 2rem);
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .qa-cta:hover { background: var(--crimson); transform: translateY(-2px); }
+
+    .qa-footer {
+      font-size: var(--caption-size);
+      letter-spacing: 0.2em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div id="progress"></div>
+
+<!-- Navigation dots -->
+<nav class="nav-dots" id="navDots" aria-label="幻灯片导航"></nav>
+
+<!-- Slide counter -->
+<div id="slide-counter">01 / 13</div>
+
+
+<!-- ================================================
+     SLIDE I · COVER
+     ================================================ -->
+<section class="slide cover" data-slide="0" aria-label="封面">
+  <div class="cross" style="top: clamp(3rem,8vh,6rem); left: var(--slide-pad-x)"></div>
+  <div class="cross" style="bottom: clamp(3rem,8vh,6rem); right: calc(var(--slide-pad-x) + clamp(4rem,12vw,11rem))"></div>
+
+  <div class="section-mark reveal-fade d3">
+    <div class="num">00</div>
+  </div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1">项目分享 · 2026</div>
+
+    <div class="cover-product reveal d2">
+      智能报销助手<em>Agent</em>
+    </div>
+
+    <div class="h-rule reveal d3"><div class="dot"></div></div>
+
+    <p class="cover-sub reveal d4">
+      告别贴票噩梦，让报销回归简单<br>
+      从繁琐到一键提交，让 AI 替你搞定一切
+    </p>
+
+    <div class="cover-meta reveal d5">
+      <span>方佳俊</span><div class="sep"></div>
+      <span>郑峙岳</span><div class="sep"></div>
+      <span>王雅琪</span><div class="sep"></div>
+      <span>郭律</span>
+    </div>
+  </div>
+
+  <!-- Decorative illustrations: invoice + email -->
+  <div class="cover-deco">
+
+    <!-- 发票 SVG card -->
+    <div class="deco-card deco-invoice reveal d3">
+      <svg viewBox="0 0 170 220" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Shadow -->
+        <rect x="10" y="12" width="152" height="202" rx="5" fill="#d4cfca" opacity="0.5"/>
+        <!-- Body -->
+        <rect x="6" y="6" width="152" height="202" rx="5" fill="#faf9f7" stroke="#d4cfca" stroke-width="1.5"/>
+        <!-- Header band -->
+        <rect x="6" y="6" width="152" height="32" rx="5" fill="#c41e3a" opacity="0.09"/>
+        <rect x="6" y="28" width="152" height="10" rx="0" fill="#c41e3a" opacity="0.09"/>
+        <!-- Title: 增值税电子发票 -->
+        <rect x="28" y="14" width="62" height="7" rx="3" fill="#c41e3a" opacity="0.55"/>
+        <rect x="28" y="25" width="38" height="5" rx="2.5" fill="#c41e3a" opacity="0.25"/>
+        <!-- No. badge -->
+        <rect x="112" y="16" width="36" height="14" rx="3" fill="#c41e3a" opacity="0.08" stroke="#c41e3a" stroke-width="1" stroke-opacity="0.3"/>
+        <rect x="116" y="20" width="28" height="4" rx="2" fill="#c41e3a" opacity="0.4"/>
+        <!-- Divider -->
+        <line x1="16" y1="46" x2="152" y2="46" stroke="#d4cfca" stroke-width="1"/>
+        <!-- Field rows -->
+        <rect x="16" y="54" width="44" height="5" rx="2.5" fill="#aaa" opacity="0.35"/>
+        <rect x="70" y="54" width="78" height="5" rx="2.5" fill="#888" opacity="0.3"/>
+        <rect x="16" y="65" width="44" height="5" rx="2.5" fill="#aaa" opacity="0.35"/>
+        <rect x="70" y="65" width="60" height="5" rx="2.5" fill="#888" opacity="0.3"/>
+        <!-- Divider 2 -->
+        <line x1="16" y1="76" x2="152" y2="76" stroke="#d4cfca" stroke-width="1"/>
+        <!-- Table header -->
+        <rect x="16" y="82" width="72" height="5" rx="2.5" fill="#c41e3a" opacity="0.3"/>
+        <rect x="100" y="82" width="24" height="5" rx="2.5" fill="#c41e3a" opacity="0.3"/>
+        <rect x="132" y="82" width="20" height="5" rx="2.5" fill="#c41e3a" opacity="0.3"/>
+        <!-- Table rows -->
+        <rect x="16" y="93" width="68" height="4" rx="2" fill="#888" opacity="0.28"/>
+        <rect x="100" y="93" width="24" height="4" rx="2" fill="#888" opacity="0.28"/>
+        <rect x="132" y="93" width="20" height="4" rx="2" fill="#888" opacity="0.28"/>
+
+        <rect x="16" y="103" width="58" height="4" rx="2" fill="#888" opacity="0.22"/>
+        <rect x="100" y="103" width="20" height="4" rx="2" fill="#888" opacity="0.22"/>
+        <rect x="132" y="103" width="20" height="4" rx="2" fill="#888" opacity="0.22"/>
+
+        <rect x="16" y="113" width="64" height="4" rx="2" fill="#888" opacity="0.22"/>
+        <rect x="100" y="113" width="22" height="4" rx="2" fill="#888" opacity="0.22"/>
+        <rect x="132" y="113" width="20" height="4" rx="2" fill="#888" opacity="0.22"/>
+
+        <rect x="16" y="123" width="50" height="4" rx="2" fill="#888" opacity="0.18"/>
+        <rect x="100" y="123" width="20" height="4" rx="2" fill="#888" opacity="0.18"/>
+        <rect x="132" y="123" width="20" height="4" rx="2" fill="#888" opacity="0.18"/>
+        <!-- Total line -->
+        <line x1="16" y1="135" x2="152" y2="135" stroke="#d4cfca" stroke-width="1"/>
+        <rect x="16" y="141" width="32" height="6" rx="3" fill="#c41e3a" opacity="0.3"/>
+        <rect x="112" y="139" width="40" height="9" rx="3" fill="#c41e3a" opacity="0.12" stroke="#c41e3a" stroke-width="1" stroke-opacity="0.4"/>
+        <rect x="116" y="142" width="32" height="5" rx="2.5" fill="#c41e3a" opacity="0.6"/>
+        <!-- Official stamp (dashed circle) -->
+        <circle cx="130" cy="182" r="24" stroke="#c41e3a" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.35"/>
+        <circle cx="130" cy="182" r="18" stroke="#c41e3a" stroke-width="1" opacity="0.2"/>
+        <rect x="119" y="178" width="22" height="4" rx="2" fill="#c41e3a" opacity="0.3"/>
+        <rect x="122" y="184" width="16" height="3" rx="1.5" fill="#c41e3a" opacity="0.2"/>
+        <!-- Bottom bar -->
+        <rect x="16" y="199" width="100" height="4" rx="2" fill="#d4cfca" opacity="0.6"/>
+      </svg>
+    </div>
+
+    <!-- 邮件 SVG card -->
+    <div class="deco-card deco-email reveal d5">
+      <svg viewBox="0 0 170 130" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Shadow -->
+        <rect x="8" y="10" width="154" height="114" rx="7" fill="#d4cfca" opacity="0.5"/>
+        <!-- Envelope body -->
+        <rect x="4" y="6" width="154" height="114" rx="7" fill="#faf9f7" stroke="#d4cfca" stroke-width="1.5"/>
+        <!-- Flap fold lines (left + right diagonals to bottom-center) -->
+        <line x1="4" y1="120" x2="81" y2="68" stroke="#d4cfca" stroke-width="1.2"/>
+        <line x1="158" y1="120" x2="81" y2="68" stroke="#d4cfca" stroke-width="1.2"/>
+        <!-- Top flap: V pointing down -->
+        <path d="M4,6 L81,62 L158,6" stroke="#d4cfca" stroke-width="1.5" fill="none"/>
+        <!-- Inner letter hint -->
+        <rect x="32" y="76" width="98" height="5" rx="2.5" fill="#888" opacity="0.2"/>
+        <rect x="42" y="85" width="78" height="4" rx="2" fill="#888" opacity="0.15"/>
+        <rect x="52" y="93" width="58" height="4" rx="2" fill="#888" opacity="0.12"/>
+        <!-- Notification badge (top-right) -->
+        <circle cx="140" cy="18" r="16" fill="#c41e3a"/>
+        <rect x="131" y="13" width="18" height="5" rx="2.5" fill="white" opacity="0.92"/>
+        <rect x="134" y="20" width="12" height="4" rx="2" fill="white" opacity="0.7"/>
+        <!-- Small text "3封" hint inside badge -->
+        <rect x="133" y="15" width="14" height="3" rx="1.5" fill="white" opacity="0.5"/>
+      </svg>
+    </div>
+
+  </div>
+
+  <div class="page-num">— I —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE II · 灵魂拷问
+     ================================================ -->
+<section class="slide question-slide" data-slide="1" aria-label="灵魂拷问">
+  <div class="section-mark reveal-fade">
+    <div class="num">01</div>
+    <div class="ornament">
+      <span style="width:30px"></span>
+      <span style="width:18px"></span>
+      <span style="width:9px"></span>
+    </div>
+  </div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1" style="text-align:center">第一部分 · 背景与共鸣</div>
+    <div class="big-emoji reveal d2">🙋</div>
+    <p class="big-question reveal d3">
+      在座的各位，有谁用过<br><em>公司的报销系统</em>？
+    </p>
+    <div class="h-rule reveal d4"><div class="dot"></div></div>
+    <p class="sub-question reveal d5">
+      那再问——有谁觉得报销是一件<em>"轻松愉快"</em>的事情？
+    </p>
+  </div>
+
+  <div class="page-num">— II —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE III · 血泪史
+     ================================================ -->
+<section class="slide" data-slide="2" aria-label="血泪史">
+  <div class="section-mark reveal-fade">
+    <div class="num">02</div>
+    <div class="ornament">
+      <span style="width:30px"></span>
+      <span style="width:18px"></span>
+      <span style="width:9px"></span>
+    </div>
+  </div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1">天下苦"报销"久矣</div>
+    <h2 class="slide-h2 reveal d2">我的<em>"血泪史"</em></h2>
+    <div class="wide-rule reveal d2"></div>
+
+    <div class="pain-grid">
+      <div class="pain-card reveal d3">
+        <div class="pain-icon">📬</div>
+        <div class="pain-title">发票大搜集</div>
+        <p class="pain-desc">每次报销前，要去邮箱一封封下载电子发票，把各种 PDF、图片归拢整理，耗时耗力。</p>
+      </div>
+      <div class="pain-card reveal d4">
+        <div class="pain-icon">🤔</div>
+        <div class="pain-title">灵魂分类题</div>
+        <p class="pain-desc">看着一堆打车发票发愁，还要判断该选哪种"费用类型"，选错直接被财务退回。</p>
+      </div>
+      <div class="pain-card reveal d5">
+        <div class="pain-icon">🧮</div>
+        <div class="pain-title">人肉计算器</div>
+        <p class="pain-desc">所有发票金额逐笔加总，算错一毛钱就对不上账，全部退回重填。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">— III —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE IV · 产品思考
+     ================================================ -->
+<section class="slide" data-slide="3" aria-label="产品思考">
+  <div class="section-mark reveal-fade">
+    <div class="num">03</div>
+    <div class="ornament">
+      <span style="width:30px"></span>
+      <span style="width:18px"></span>
+      <span style="width:9px"></span>
+    </div>
+  </div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1">产品思考 · 为什么报销 Agent 值得做？</div>
+    <h2 class="slide-h2 reveal d2">报销，是 AI Agent 的<em>绝佳落地场景</em></h2>
+    <div class="wide-rule reveal d2"></div>
+
+    <div class="reason-grid">
+      <div class="reason-card reveal-left d3">
+        <div class="reason-num">理由一</div>
+        <div class="reason-title">需求边界收敛</div>
+        <div class="reason-highlight">有限集合，AI 极易做到 100% 精准覆盖</div>
+        <p class="reason-body">报销不是开放式任务。发票种类（滴滴、餐饮、机票）、需提取的字段（金额、日期、抬头）都是<strong>固定的有限集合</strong>，AI 极易做到 100% 精准覆盖。</p>
+      </div>
+      <div class="reason-card reveal-right d4">
+        <div class="reason-num">理由二</div>
+        <div class="reason-title">规则白纸黑字</div>
+        <div class="reason-highlight">高度结构化，大模型最擅长执行清晰规则</div>
+        <p class="reason-body">像《2026 年度报销流程》都有<strong>明确 SOP 的文档</strong>，大模型最擅长的就是阅读理解并执行边界清晰的规则。只要规则明确，AI 就不会"胡编乱造"。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">— IV —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE V · QUIZ 1
+     ================================================ -->
+<section class="slide slide-quiz" data-slide="4" aria-label="测验一">
+  <div class="section-mark reveal-fade">
+    <div class="num">04</div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-header reveal d1">
+      <span class="quiz-badge">第 1 题 / 4 · 报销防坑测试</span>
+      <h2 class="quiz-title">打车费的<em>"薛定谔状态"</em></h2>
+    </div>
+
+    <div class="wide-rule reveal d1"></div>
+
+    <div class="quiz-body reveal d2">
+      <div class="quiz-scenario">
+        <span class="s-label">📋 情景题</span>
+        小明常驻深圳。<br>
+        周二在深圳拜访客户，打车花了 <b>¥50</b>。<br>
+        周四出差上海，从酒店打车去客户公司，花了 <b>¥30</b>。<br><br>
+        这两张发票，分别该选什么费用类型？
+      </div>
+      <div class="quiz-options" id="q1-opts">
+        <div class="opt" data-q="1" data-ok="false">
+          <span class="opt-lbl">A</span>
+          <span>两张都选"市内交通费"</span>
+        </div>
+        <div class="opt" data-q="1" data-ok="false">
+          <span class="opt-lbl">B</span>
+          <span>两张都选"差旅费 - 的士费"</span>
+        </div>
+        <div class="opt" data-q="1" data-ok="true">
+          <span class="opt-lbl">C</span>
+          <span>深圳→"市内交通费"，上海→"差旅费 - 的士费"</span>
+        </div>
+        <div class="opt" data-q="1" data-ok="false">
+          <span class="opt-lbl">D</span>
+          <span>深圳→"市内交通费"，上海→"差旅费 - 出差交通费"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-footer reveal d3">
+      <button class="reveal-btn" id="btn1" onclick="revealAnswer(1)">揭晓答案</button>
+      <p class="ans-tip" id="tip1">
+        <span class="tip-ok">✓ 答案 C</span>：常驻城市打车 = 市内交通费；出差地打车 = 差旅费-的士费；往返机场/火车站才选"出差交通费"。选错直接被退！
+      </p>
+    </div>
+  </div>
+
+  <div class="page-num">— V —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE VI · QUIZ 2
+     ================================================ -->
+<section class="slide slide-quiz" data-slide="5" aria-label="测验二">
+  <div class="section-mark reveal-fade">
+    <div class="num">05</div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-header reveal d1">
+      <span class="quiz-badge">第 2 题 / 4 · 报销防坑测试</span>
+      <h2 class="quiz-title">去机场的<em>"刺客"</em></h2>
+    </div>
+
+    <div class="wide-rule reveal d1"></div>
+
+    <div class="quiz-body reveal d2">
+      <div class="quiz-scenario">
+        <span class="s-label">📋 情景题</span>
+        小红出差去北京：<br>
+        ① 从家打车到宝安机场 <b>¥100</b><br>
+        ② 从大兴机场打车去酒店 <b>¥120</b><br>
+        ③ 从酒店打车去客户公司 <b>¥50</b><br><br>
+        三笔打车费，该怎么选类型？
+      </div>
+      <div class="quiz-options" id="q2-opts">
+        <div class="opt" data-q="2" data-ok="false">
+          <span class="opt-lbl">A</span>
+          <span>只要出差，全选"差旅费 - 的士费"</span>
+        </div>
+        <div class="opt" data-q="2" data-ok="false">
+          <span class="opt-lbl">B</span>
+          <span>去机场选"市内交通费"，后两笔选"差旅费 - 的士费"</span>
+        </div>
+        <div class="opt" data-q="2" data-ok="true">
+          <span class="opt-lbl">C</span>
+          <span>①②选"差旅费 - 出差交通费"，③选"差旅费 - 的士费"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-footer reveal d3">
+      <button class="reveal-btn" id="btn2" onclick="revealAnswer(2)">揭晓答案</button>
+      <p class="ans-tip" id="tip2">
+        <span class="tip-ok">✓ 答案 C</span>：往返机场、火车站 = 出差交通费；在出差地其他打车办事 = 的士费。是不是感觉像在考驾照科目一？
+      </p>
+    </div>
+  </div>
+
+  <div class="page-num">— VI —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE VII · QUIZ 3
+     ================================================ -->
+<section class="slide slide-quiz" data-slide="6" aria-label="测验三">
+  <div class="section-mark reveal-fade">
+    <div class="num">06</div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-header reveal d1">
+      <span class="quiz-badge">第 3 题 / 4 · 报销防坑测试</span>
+      <h2 class="quiz-title">市内打车的<em>"隐藏关卡"</em></h2>
+    </div>
+
+    <div class="wide-rule reveal d1"></div>
+
+    <div class="quiz-body reveal d2">
+      <div class="quiz-scenario">
+        <span class="s-label">📋 情景题</span>
+        小强昨晚加班到 22:00，<br>
+        打车回家花了 <b>¥60</b>。<br><br>
+        他报销"市内交通费"时，<br>
+        只上传了一张<b>滴滴电子发票</b>并填了金额。<br><br>
+        他的报销单会有什么下场？
+      </div>
+      <div class="quiz-options" id="q3-opts">
+        <div class="opt" data-q="3" data-ok="false">
+          <span class="opt-lbl">A</span>
+          <span>顺利通过，坐等打款 🎉</span>
+        </div>
+        <div class="opt" data-q="3" data-ok="true">
+          <span class="opt-lbl">B</span>
+          <span>被打回：必须补充"行程单"，并填写"事由"和"往返地"</span>
+        </div>
+        <div class="opt" data-q="3" data-ok="false">
+          <span class="opt-lbl">C</span>
+          <span>被打回：加班打车不能报销</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-footer reveal d3">
+      <button class="reveal-btn" id="btn3" onclick="revealAnswer(3)">揭晓答案</button>
+      <p class="ans-tip" id="tip3">
+        <span class="tip-ok">✓ 答案 B</span>：市内交通费除发票外，必须附【行程单】，并手填"事由、上车点、下车点"。少一项退回重填——人的耐心就是这么耗尽的。
+      </p>
+    </div>
+  </div>
+
+  <div class="page-num">— VII —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE VIII · QUIZ 4
+     ================================================ -->
+<section class="slide slide-quiz" data-slide="7" aria-label="测验四">
+  <div class="section-mark reveal-fade">
+    <div class="num">07</div>
+  </div>
+
+  <div class="quiz-wrap">
+    <div class="quiz-header reveal d1">
+      <span class="quiz-badge">第 4 题 / 4 · 报销防坑测试</span>
+      <h2 class="quiz-title">部门聚餐的<em>"费用归属"</em></h2>
+    </div>
+
+    <div class="wide-rule reveal d1"></div>
+
+    <div class="quiz-body reveal d2">
+      <div class="quiz-scenario">
+        <span class="s-label">📋 情景题</span>
+        小李作为组织者，带团队吃了一顿<b>部门聚餐</b>，共花了 <b>¥1,200</b>。<br><br>
+        填报销单时，他不确定分类，于是顺手选了<b>"其他报销"</b>下的<b>"餐费"</b>。<br><br>
+        请问他的选择正确吗？
+      </div>
+      <div class="quiz-options" id="q4-opts">
+        <div class="opt" data-q="4" data-ok="false">
+          <span class="opt-lbl">A</span>
+          <span>正确，有吃饭发票就选餐费，没问题</span>
+        </div>
+        <div class="opt" data-q="4" data-ok="true">
+          <span class="opt-lbl">B</span>
+          <span>错误，应选"员工福利" → "部门团建"</span>
+        </div>
+        <div class="opt" data-q="4" data-ok="false">
+          <span class="opt-lbl">C</span>
+          <span>错误，部门聚餐属私人消费，不能报销</span>
+        </div>
+        <div class="opt" data-q="4" data-ok="false">
+          <span class="opt-lbl">D</span>
+          <span>错误，应选"行政费用" → "餐饮招待"</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-footer reveal d3">
+      <button class="reveal-btn" id="btn4" onclick="revealAnswer(4)">揭晓答案</button>
+      <p class="ans-tip" id="tip4">
+        <span class="tip-ok">✓ 答案 B</span>：部门聚餐属于员工福利范畴，正确路径是【员工福利 → 部门团建】。选"餐费"会触发费用类型不符被财务退回，"餐饮招待"则专指对外商务接待。
+      </p>
+    </div>
+  </div>
+
+  <div class="page-num">— VIII —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE IX · 传统 VS 理想
+     ================================================ -->
+<section class="slide" data-slide="8" aria-label="传统vs理想">
+  <div class="section-mark reveal-fade">
+    <div class="num">08</div>
+    <div class="ornament">
+      <span style="width:30px"></span>
+      <span style="width:18px"></span>
+      <span style="width:9px"></span>
+    </div>
+  </div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1">第三部分 · 解决方案</div>
+    <h2 class="slide-h2 reveal d2">报销系统的<em>进化</em></h2>
+    <div class="wide-rule reveal d2"></div>
+
+    <div class="compare-wrap">
+      <div class="cmp-col old reveal-left d3">
+        <div class="cmp-title">😩 传统报销系统</div>
+        <div class="cmp-sub">人去适应系统</div>
+        <ul class="cmp-list">
+          <li>背诵报销制度，全靠脑子记</li>
+          <li>手动到处下载整理发票</li>
+          <li>逐条手动判断费用类型</li>
+          <li>人工验证发票抬头合规性</li>
+          <li>手动计算各笔金额合计</li>
+          <li>手动补写备注与附件</li>
+        </ul>
+      </div>
+
+      <div class="compare-sep reveal d3">
+        <div class="sep-line"></div>
+        <span class="vs-text">VS</span>
+        <div class="sep-line"></div>
+      </div>
+
+      <div class="cmp-col new reveal-right d3">
+        <div class="cmp-title">✨ 理想报销系统</div>
+        <div class="cmp-sub">系统来适应人</div>
+        <ul class="cmp-list">
+          <li>只管上传凭证，其余交给 Agent</li>
+          <li>自动识别提取发票信息</li>
+          <li>智能匹配公司报销规则</li>
+          <li>自动校验发票合规性</li>
+          <li>自动汇总计算报销总额</li>
+          <li>一键生成标准报销单</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">— IX —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE X · Agent 登场
+     ================================================ -->
+<section class="slide agent-slide" data-slide="9" aria-label="Agent登场">
+  <div class="section-mark reveal-fade">
+    <div class="num">09</div>
+    <div class="ornament">
+      <span style="width:30px"></span>
+      <span style="width:18px"></span>
+      <span style="width:9px"></span>
+    </div>
+  </div>
+
+  <div class="slide-content" style="gap: var(--gap)">
+    <div class="eyebrow reveal d1" style="text-align:center">智能报销助手 Agent · 登场</div>
+
+    <p class="agent-slogan reveal d2">
+      你只管<em>上传</em>，<br>剩下的交给 <em>Agent</em> 🤖
+    </p>
+
+    <div class="h-rule reveal d3"><div class="dot"></div></div>
+
+    <div class="flow-row reveal d4">
+      <div class="flow-card">
+        <span class="flow-icon">📤</span>
+        <span class="flow-num">Step 01</span>
+        <span class="flow-lbl">上传发票<br>及行程单</span>
+      </div>
+      <div class="flow-card">
+        <span class="flow-icon">🔍</span>
+        <span class="flow-num">Step 02</span>
+        <span class="flow-lbl">自动识别<br>提取信息</span>
+      </div>
+      <div class="flow-card">
+        <span class="flow-icon">🧠</span>
+        <span class="flow-num">Step 03</span>
+        <span class="flow-lbl">智能匹配<br>报销规则</span>
+      </div>
+      <div class="flow-card">
+        <span class="flow-icon">✅</span>
+        <span class="flow-num">Step 04</span>
+        <span class="flow-lbl">一键提交<br>标准报销单</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">— X —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE XI · LIVE DEMO
+     ================================================ -->
+<section class="slide demo-slide" data-slide="10" aria-label="演示">
+  <div class="section-mark reveal-fade">
+    <div class="num">10</div>
+  </div>
+
+  <div class="slide-content" style="align-items:center; justify-content:center; text-align:center;">
+    <div class="demo-window reveal d2">
+      <div class="demo-titlebar">
+        <span class="dot-r"></span>
+        <span class="dot-y"></span>
+        <span class="dot-g"></span>
+        <span class="demo-win-title">智能报销助手 Agent · Live Demo</span>
+      </div>
+      <div class="demo-body">
+        <span class="demo-label-badge reveal d2">LIVE DEMO · 现场演示</span>
+        <div class="demo-big-text reveal d3">
+          核心功能<span class="blink">_</span>
+        </div>
+        <p class="demo-hint reveal d4">请看我的屏幕 →</p>
+      </div>
+    </div>
+    <p class="demo-caption reveal d5">第四部分 · 功能演示</p>
+  </div>
+
+  <div class="page-num">— XI —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE XII · 价值与收益
+     ================================================ -->
+<section class="slide" data-slide="11" aria-label="价值与收益">
+  <div class="section-mark reveal-fade">
+    <div class="num">11</div>
+    <div class="ornament">
+      <span style="width:30px"></span>
+      <span style="width:18px"></span>
+      <span style="width:9px"></span>
+    </div>
+  </div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1">第五部分 · 总结与展望</div>
+    <h2 class="slide-h2 reveal d2">价值与<em>收益</em></h2>
+    <div class="wide-rule reveal d2"></div>
+
+    <div class="value-grid">
+      <div class="val-col emp reveal-left d3">
+        <div class="val-col-title">👤 对员工</div>
+        <div class="val-metric">
+          <div>
+            <div class="val-num">2h → 5min</div>
+            <div class="val-numlbl">每月报销耗时大幅缩短</div>
+          </div>
+        </div>
+        <ul class="val-list">
+          <li><span class="chk">✓</span>再也不用做费用分类题</li>
+          <li><span class="chk">✓</span>告别到处下载整理发票</li>
+          <li><span class="chk">✓</span>不再人肉按计算器算总额</li>
+          <li><span class="chk">✓</span>附件备注自动填写，不漏项</li>
+        </ul>
+      </div>
+
+      <div class="val-col fin reveal-right d3">
+        <div class="val-col-title">🏦 对财务</div>
+        <div class="val-metric">
+          <div>
+            <div class="val-num">退单率 ↓↓</div>
+            <div class="val-numlbl">规范化输入，审核效率大幅提升</div>
+          </div>
+        </div>
+        <ul class="val-list">
+          <li><span class="chk">✓</span>告别"报销类型选错"被退回</li>
+          <li><span class="chk">✓</span>告别"附件缺失"被退回</li>
+          <li><span class="chk">✓</span>标准化输出，审核更顺畅</li>
+          <li><span class="chk">✓</span>合规校验前置，减少人工核查</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-num">— XII —</div>
+</section>
+
+
+<!-- ================================================
+     SLIDE XIII · Q&A
+     ================================================ -->
+<section class="slide qa-slide" data-slide="12" aria-label="Q&A">
+  <div class="cross" style="top: clamp(3rem,8vh,6rem); left: var(--slide-pad-x)"></div>
+  <div class="cross" style="bottom: clamp(3rem,8vh,6rem); right: var(--slide-pad-x)"></div>
+
+  <div class="slide-content">
+    <div class="eyebrow reveal d1" style="text-align:center">感谢聆听</div>
+
+    <h2 class="qa-main reveal d2">
+      Any<br><em>Questions?</em> 🙋
+    </h2>
+
+    <div class="h-rule reveal d3"><div class="dot"></div></div>
+
+    <p class="qa-sub reveal d4">
+      欢迎大家体验智能报销助手，多提宝贵建议！
+    </p>
+
+    <div style="display:flex; justify-content:center;" class="reveal d5">
+      <a class="qa-cta" href="#">🚀 立即体验</a>
+    </div>
+
+    <div class="qa-footer reveal d6">
+      智能报销助手 Agent · 2026
+    </div>
+  </div>
+
+  <div class="page-num">— XIII —</div>
+</section>
+
+
+<script>
+  /* ===========================================
+     PRESENTATION CONTROLLER
+     Keyboard / scroll / touch navigation,
+     progress bar, nav dots, slide counter.
+     =========================================== */
+  class Presentation {
+    constructor() {
+      this.slides   = Array.from(document.querySelectorAll('.slide'));
+      this.total    = this.slides.length;
+      this.current  = 0;
+      this.$prog    = document.getElementById('progress');
+      this.$counter = document.getElementById('slide-counter');
+      this.$dots    = document.getElementById('navDots');
+      this._init();
+    }
+
+    _init() {
+      this._buildDots();
+      this._observe();
+      this._bindKeys();
+      this._bindTouch();
+      this._updateUI(0);
+    }
+
+    _buildDots() {
+      this.slides.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-dot';
+        btn.setAttribute('aria-label', `第 ${i + 1} 页`);
+        btn.addEventListener('click', () => this._go(i));
+        this.$dots.appendChild(btn);
+      });
+      this.dots = Array.from(this.$dots.querySelectorAll('.nav-dot'));
+    }
+
+    _observe() {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            this._updateUI(this.slides.indexOf(e.target));
+          }
+        });
+      }, { threshold: 0.5 });
+      this.slides.forEach(s => io.observe(s));
+    }
+
+    _updateUI(idx) {
+      this.current = idx;
+      const pct = this.total > 1 ? ((idx + 1) / this.total) * 100 : 100;
+      this.$prog.style.width = pct + '%';
+      this.$counter.textContent =
+        `${String(idx + 1).padStart(2, '0')} / ${String(this.total).padStart(2, '0')}`;
+      this.dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+
+    _go(idx) {
+      if (idx < 0 || idx >= this.total) return;
+      this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    _bindKeys() {
+      document.addEventListener('keydown', e => {
+        switch (e.key) {
+          case 'ArrowDown': case 'ArrowRight': case ' ':
+            e.preventDefault(); this._go(this.current + 1); break;
+          case 'ArrowUp': case 'ArrowLeft':
+            e.preventDefault(); this._go(this.current - 1); break;
+          case 'Home': this._go(0); break;
+          case 'End':  this._go(this.total - 1); break;
+        }
+      });
+    }
+
+    _bindTouch() {
+      let startY = 0;
+      document.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener('touchend', e => {
+        const delta = startY - e.changedTouches[0].clientY;
+        if (Math.abs(delta) > 40) delta > 0 ? this._go(this.current + 1) : this._go(this.current - 1);
+      }, { passive: true });
+    }
+  }
+
+  /* ===========================================
+     QUIZ ANSWER REVEAL
+     Highlights correct option, fades wrong ones,
+     shows tip, disables button.
+     =========================================== */
+  function revealAnswer(quizNum) {
+    document.querySelectorAll(`.opt[data-q="${quizNum}"]`).forEach(opt => {
+      opt.classList.add(opt.dataset.ok === 'true' ? 'correct' : 'wrong');
+    });
+    document.getElementById(`tip${quizNum}`).classList.add('show');
+    const btn = document.getElementById(`btn${quizNum}`);
+    btn.textContent = '✓ 已揭晓';
+    btn.classList.add('done');
+    btn.disabled = true;
+  }
+
+  new Presentation();
+</script>
+
+</body>
+</html>
