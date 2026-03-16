@@ -646,6 +646,60 @@
       font-size: 0.9em;
       margin-top: 0.05em;
     }
+    .bs-reply {
+      margin-top: 0.2em;
+      margin-left: 1.1em;
+      padding: 0.25em 0.5em;
+      background: rgba(74, 122, 90, 0.07);
+      border-left: 2px solid rgba(74, 122, 90, 0.3);
+      border-radius: 0 2px 2px 0;
+      display: flex;
+      gap: 0.4em;
+      align-items: flex-start;
+    }
+    .bs-reply-badge {
+      font-size: clamp(0.48rem, 0.7vw, 0.58rem);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--sage);
+      flex-shrink: 0;
+      margin-top: 0.15em;
+      opacity: 0.7;
+    }
+    .bs-reply-text {
+      font-family: var(--font-body);
+      font-size: clamp(0.58rem, 0.88vw, 0.7rem);
+      color: var(--ink-muted);
+      line-height: 1.4;
+      font-style: italic;
+    }
+    .bs-claude-reply {
+      margin-top: 0.1em;
+      margin-bottom: 0.3em;
+      margin-left: 1.1em;
+      padding: 0.25em 0.5em;
+      background: rgba(196, 30, 58, 0.05);
+      border-left: 2px solid rgba(196, 30, 58, 0.4);
+      border-radius: 0 2px 2px 0;
+      display: flex;
+      gap: 0.4em;
+      align-items: flex-start;
+    }
+    .bs-claude-badge {
+      font-size: clamp(0.46rem, 0.68vw, 0.56rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--crimson);
+      flex-shrink: 0;
+      margin-top: 0.15em;
+      opacity: 0.85;
+    }
+    .bs-claude-text {
+      font-family: var(--font-body);
+      font-size: clamp(0.58rem, 0.88vw, 0.7rem);
+      color: var(--ink);
+      line-height: 1.4;
+    }
 
     /* keep these for compatibility */
     .newrole-grid { display: flex; flex-direction: column; gap: var(--elem-gap); }
@@ -807,8 +861,13 @@
     .ai-tools-row {
       display: flex;
       gap: clamp(0.5rem, 1.2vw, 1rem);
-      flex-wrap: wrap;
-      align-items: stretch;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .ai-tools-left {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.35rem, 0.9vh, 0.6rem);
     }
     .ai-tool-card {
       display: flex;
@@ -819,14 +878,34 @@
       border-top: 2px solid var(--sage);
       padding: clamp(0.4rem, 1vh, 0.7rem) clamp(0.5rem, 1.2vw, 0.9rem);
       border-radius: 0 0 2px 2px;
-      flex: 1;
-      min-width: 0;
+      min-width: clamp(180px, 22vw, 280px);
+    }
+    .ai-tool-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      margin-bottom: 0.15em;
+    }
+    .ai-tool-logo {
+      width: clamp(18px, 2.2vw, 28px);
+      height: clamp(18px, 2.2vw, 28px);
+      object-fit: contain;
+      border-radius: 4px;
+      flex-shrink: 0;
     }
     .ai-tool-name {
       font-size: var(--body-size);
-      font-weight: 500;
+      font-weight: 600;
       color: var(--ink);
     }
+    .ai-tool-url {
+      font-size: var(--caption-size);
+      color: var(--crimson);
+      text-decoration: none;
+      opacity: 0.65;
+      letter-spacing: 0.04em;
+    }
+    .ai-tool-url:hover { opacity: 1; }
     .ai-tool-model {
       font-size: var(--caption-size);
       color: var(--sage);
@@ -837,6 +916,12 @@
       color: var(--ink-muted);
       line-height: 1.4;
       font-weight: 300;
+    }
+    .ai-deliverables {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.3rem, 0.8vh, 0.5rem);
+      align-items: flex-end;
     }
 
     /* ===========================================
@@ -852,11 +937,11 @@
       flex: 1;
       background: var(--bg-warm);
       border: 1px solid var(--rule);
-      padding: clamp(0.6rem, 1.5vh, 1rem) clamp(0.5rem, 1.2vw, 0.9rem);
+      padding: clamp(0.8rem, 2.2vh, 1.4rem) clamp(0.6rem, 1.4vw, 1rem);
       border-radius: 2px;
       display: flex;
       flex-direction: column;
-      gap: 0.3em;
+      gap: 0.35em;
       position: relative;
     }
     .step-card.highlight {
@@ -1048,6 +1133,94 @@
       overflow-y: auto;
       flex: 1;
       min-height: 0;
+    }
+    /* Scrolling questions */
+    @keyframes scroll-qs {
+      0%   { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+    .qs-container {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--crimson);
+      border-radius: 0 2px 2px 0;
+      background: var(--bg-warm);
+      display: flex;
+      flex-direction: column;
+    }
+    .qs-header {
+      padding: clamp(0.35rem,0.8vh,0.55rem) clamp(0.6rem,1.2vw,0.9rem);
+      border-bottom: 1px solid var(--rule);
+      background: var(--bg-darker);
+      flex-shrink: 0;
+    }
+    .qs-header-label {
+      font-size: var(--caption-size);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--crimson);
+    }
+    .qs-header-sub {
+      font-size: var(--caption-size);
+      color: var(--ink-faint);
+      font-style: italic;
+      margin-top: 0.1em;
+    }
+    .qs-viewport {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .qs-viewport::before,
+    .qs-viewport::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0;
+      height: 32px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .qs-viewport::before { top: 0; background: linear-gradient(to bottom, var(--bg-warm), transparent); }
+    .qs-viewport::after  { bottom: 0; background: linear-gradient(to top, var(--bg-warm), transparent); }
+    .qs-track {
+      animation: scroll-qs 55s linear infinite;
+      padding: 0.4em 0;
+    }
+    .qs-track:hover { animation-play-state: paused; }
+    .qs-item {
+      display: flex;
+      gap: 0.5em;
+      align-items: baseline;
+      padding: clamp(0.18rem,0.4vh,0.3rem) clamp(0.6rem,1.2vw,0.9rem);
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      font-family: var(--font-body);
+      font-size: clamp(0.6rem,0.92vw,0.73rem);
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+    .qs-num {
+      font-family: var(--font-serif);
+      font-size: 0.75em;
+      color: var(--crimson);
+      opacity: 0.5;
+      flex-shrink: 0;
+      width: 1.8em;
+      text-align: right;
+    }
+    .qs-cat {
+      font-size: var(--caption-size);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      background: var(--bg-darker);
+      padding: 0.25em clamp(0.6rem,1.2vw,0.9rem);
+      border-bottom: 1px solid var(--rule);
+      border-top: 1px solid var(--rule);
+      margin: 0.15em 0;
+      font-family: var(--font-body);
     }
     .prompt-block::-webkit-scrollbar { width: 3px; }
     .prompt-block::-webkit-scrollbar-track { background: transparent; }
@@ -1372,43 +1545,43 @@
     <h2 class="slide-h2 reveal d2">产品经理的<em>工作全旅程</em></h2>
     <div class="wide-rule reveal d3"></div>
 
-    <!-- PM Journey Timeline -->
-    <div class="pm-journey reveal d4">
+    <!-- PM Journey Timeline — larger, pushed down -->
+    <div class="pm-journey reveal d4" style="padding: clamp(1.2rem, 3.5vh, 2.5rem) 0 clamp(0.8rem, 2vh, 1.5rem);">
       <div class="journey-track">
         <div class="journey-step active">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">需求调研</div>
-          <div class="journey-step-sub">用户访谈<br>市场分析</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem); font-weight:500;">需求调研</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">用户访谈<br>市场分析</div>
         </div>
         <div class="journey-step active">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">竞品分析</div>
-          <div class="journey-step-sub">功能对比<br>体验拆解</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem); font-weight:500;">竞品分析</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">功能对比<br>体验拆解</div>
         </div>
         <div class="journey-step active">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">原型设计</div>
-          <div class="journey-step-sub">交互逻辑<br>界面还原</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem); font-weight:500;">原型设计</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">交互逻辑<br>界面还原</div>
         </div>
         <div class="journey-step active">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">PRD 撰写</div>
-          <div class="journey-step-sub">功能规格<br>边界定义</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem); font-weight:500;">PRD 撰写</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">功能规格<br>边界定义</div>
         </div>
         <div class="journey-step">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">需求评审</div>
-          <div class="journey-step-sub">研发对齐<br>排期确认</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem);">需求评审</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">研发对齐<br>排期确认</div>
         </div>
         <div class="journey-step">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">需求跟进</div>
-          <div class="journey-step-sub">研发协同<br>验收测试</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem);">需求跟进</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">研发协同<br>验收测试</div>
         </div>
         <div class="journey-step">
-          <div class="journey-dot"></div>
-          <div class="journey-step-label">上线复盘</div>
-          <div class="journey-step-sub">数据分析<br>迭代规划</div>
+          <div class="journey-dot" style="width:clamp(13px,1.8vw,18px); height:clamp(13px,1.8vw,18px);"></div>
+          <div class="journey-step-label" style="font-size:clamp(0.72rem,1.2vw,0.95rem);">上线复盘</div>
+          <div class="journey-step-sub" style="font-size:clamp(0.58rem,0.85vw,0.7rem);">数据分析<br>迭代规划</div>
         </div>
       </div>
     </div>
@@ -1418,22 +1591,28 @@
       <p>今天重点聊前四个环节——<em>AI 渗透最深、提效最明显</em>的地方，同时分享一些日常工作中的 AI 工具实践。</p>
     </div>
 
-    <!-- Three audience cards -->
-    <div class="audience-grid reveal d6">
-      <div class="audience-card">
-        <span class="audience-num">01</span>
-        <span class="audience-title">在职产品经理</span>
-        <span class="audience-desc">每个工作环节的 AI 实操经验，直接可用</span>
+    <!-- Three audience items — vertical stack, centered -->
+    <div class="reveal d6" style="display:flex; flex-direction:column; align-items:center; gap:clamp(0.3rem,0.8vh,0.6rem); width:100%;">
+      <div class="audience-card" style="width:min(100%,520px); flex-direction:row; align-items:center; gap:0.8em;">
+        <span class="audience-num" style="flex-shrink:0; min-width:1.8em;">01</span>
+        <div>
+          <div class="audience-title">在职产品经理</div>
+          <div class="audience-desc">每个工作环节的 AI 实操经验，直接可用</div>
+        </div>
       </div>
-      <div class="audience-card">
-        <span class="audience-num">02</span>
-        <span class="audience-title">想了解 PM 的人</span>
-        <span class="audience-desc">完整还原 PM 工作流，感受这份职业的日常节奏</span>
+      <div class="audience-card" style="width:min(100%,520px); flex-direction:row; align-items:center; gap:0.8em;">
+        <span class="audience-num" style="flex-shrink:0; min-width:1.8em;">02</span>
+        <div>
+          <div class="audience-title">想了解 PM 的人</div>
+          <div class="audience-desc">完整还原 PM 工作流，感受这份职业的日常节奏</div>
+        </div>
       </div>
-      <div class="audience-card">
-        <span class="audience-num">03</span>
-        <span class="audience-title">想提升 AI 效率的人</span>
-        <span class="audience-desc">PPT 制作、写汇报、提炼信息——学完即用</span>
+      <div class="audience-card" style="width:min(100%,520px); flex-direction:row; align-items:center; gap:0.8em;">
+        <span class="audience-num" style="flex-shrink:0; min-width:1.8em;">03</span>
+        <div>
+          <div class="audience-title">想提升 AI 效率的人</div>
+          <div class="audience-desc">PPT 制作、写汇报、提炼信息——学完即用</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1495,12 +1674,39 @@
           <p><strong>Claude Sonnet 4.6 (High)</strong> — 逻辑严密，谄媚程度极低</p>
         </div>
 
-        <!-- BS Questions -->
+        <!-- BS Questions + mock AI replies -->
         <div class="bs-box">
-          <div class="bs-box-label">扔给 AI 试试</div>
+          <div class="bs-box-label">无意义问题 · AI 怎么回？</div>
+
           <div class="bs-item">"帮我优化这个需求的用户体验量子纠缠指数"</div>
+          <div class="bs-reply">
+            <span class="bs-reply-badge">其他 AI</span>
+            <span class="bs-reply-text">根据量子纠缠理论，您需求的希尔伯特空间投影值约为 0.73，建议将主按钮间距缩小 12px 以提升相干性，预计指数提升 18%……</span>
+          </div>
+          <div class="bs-claude-reply">
+            <span class="bs-claude-badge">Claude</span>
+            <span class="bs-claude-text">「用户体验量子纠缠指数」并不是一个真实存在的概念，量子纠缠是物理学术语，在 UX 领域没有对应含义。您真正想优化的是什么？</span>
+          </div>
+
           <div class="bs-item">"用递归瀑布框架提升敏捷冲刺的谐振效率"</div>
+          <div class="bs-reply">
+            <span class="bs-reply-badge">其他 AI</span>
+            <span class="bs-reply-text">建议在第三层递归节点引入冯·诺依曼谐振算子，将冲刺周期压缩至黄金比例的平方根倍，可使团队吞吐量提升 23%……</span>
+          </div>
+          <div class="bs-claude-reply">
+            <span class="bs-claude-badge">Claude</span>
+            <span class="bs-claude-text">这个问题混合了互相矛盾的概念——瀑布与敏捷是对立方法论，「谐振效率」也不是项目管理领域的真实指标。您实际想解决什么问题？</span>
+          </div>
+
           <div class="bs-item">"计算一下这份 PRD 的认知协方差矩阵"</div>
+          <div class="bs-reply">
+            <span class="bs-reply-badge">其他 AI</span>
+            <span class="bs-reply-text">经分析，您 PRD 的认知协方差矩阵特征值为 [2.7, 0.4, −1.3]，负特征值对应的需求模块存在认知耦合风险，建议优先重构……</span>
+          </div>
+          <div class="bs-claude-reply">
+            <span class="bs-claude-badge">Claude</span>
+            <span class="bs-claude-text">协方差矩阵需要数值变量作为输入，PRD 是文本文档，无法直接计算。「认知协方差矩阵」也不是标准分析方法，您想评估的是需求的哪个方面？</span>
+          </div>
         </div>
 
         <!-- Claude sticker -->
@@ -1508,11 +1714,11 @@
           <img
             src="claude-correct.png"
             alt="Claude AI - You're absolutely correct"
-            style="width: clamp(55px, 7vw, 88px); object-fit: contain; opacity: 0.9; flex-shrink:0;"
+            style="width: clamp(50px, 6vw, 80px); object-fit: contain; opacity: 0.9; flex-shrink:0;"
           >
-          <p style="font-size: var(--small-size); color: var(--ink-muted); font-style:italic; line-height:1.4;">
-            其他模型的反应……<br>
-            <strong style="color:var(--crimson); font-style:normal;">Claude 会直接指出问题所在</strong>
+          <p style="font-size: var(--small-size); color: var(--ink-muted); font-style:italic; line-height:1.5;">
+            <em style="color:var(--crimson); font-style:normal; font-weight:600;">不盲从错误前提</em>，敢于指出问题所在<br>
+            才能真正帮你做有效的调研
           </p>
         </div>
 
@@ -1523,12 +1729,12 @@
         </ul>
       </div>
 
-      <!-- Right: BullshitBench chart only, source caption right-aligned -->
-      <div style="display:flex; flex-direction:column; gap: 0.5em; min-height:0;">
+      <!-- Right: BullshitBench chart + when-to-use summary -->
+      <div style="display:flex; flex-direction:column; justify-content:center; gap: 0.5em; min-height:0; height:100%;">
         <a href="https://github.com/petergpt/bullshit-benchmark" target="_blank" style="text-decoration:none; display:block;">
           <div style="
             width: 100%;
-            height: min(54vh, 440px);
+            height: min(50vh, 400px);
             overflow: hidden;
             border: 1px solid var(--rule);
             border-radius: 2px;
@@ -1540,10 +1746,33 @@
             >
           </div>
         </a>
-        <p style="font-size: var(--caption-size); color: var(--ink-faint); font-style: italic; text-align: right;">
+        <p style="font-size: var(--caption-size); color: var(--ink-faint); font-style: italic; text-align: right; margin-bottom: 0.2em;">
           BullshitBench · <a href="https://github.com/petergpt/bullshit-benchmark" target="_blank"
             style="color:var(--crimson); text-decoration:none; opacity:0.7;">github.com/petergpt/bullshit-benchmark</a>
         </p>
+
+        <!-- When to use Claude Sonnet 4.6 High -->
+        <div style="
+          border: 1px solid var(--rule);
+          border-top: 2px solid var(--ink-soft);
+          border-radius: 0 0 2px 2px;
+          padding: clamp(0.35rem, 0.8vh, 0.6rem) clamp(0.5rem, 1vw, 0.8rem);
+          background: var(--bg-warm);
+        ">
+          <div style="font-size: var(--caption-size); letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.4em;">
+            何时选 Claude Sonnet 4.6 (High)
+          </div>
+          <div style="display:flex; flex-direction:column; gap: 0.3em;">
+            <div style="display:flex; gap: 0.5em; align-items: flex-start;">
+              <span style="color: var(--crimson); font-weight: 700; flex-shrink:0; font-size: 0.85em; margin-top: 0.1em;">→</span>
+              <span style="font-family: var(--font-body); font-size: clamp(0.62rem, 0.95vw, 0.78rem); color: var(--ink); line-height: 1.45;">需要<strong>辩论式探讨</strong>，不需要一味迎合与顺着说</span>
+            </div>
+            <div style="display:flex; gap: 0.5em; align-items: flex-start;">
+              <span style="color: var(--crimson); font-weight: 700; flex-shrink:0; font-size: 0.85em; margin-top: 0.1em;">→</span>
+              <span style="font-family: var(--font-body); font-size: clamp(0.62rem, 0.95vw, 0.78rem); color: var(--ink); line-height: 1.45;">需要做出<strong>重大决策方向</strong>，不能让 AI 帮你走弯路</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1578,28 +1807,49 @@
       flex: 1;
       min-height: 0;
     ">
-      <!-- Left: key points + pull quote -->
-      <div style="display:flex; flex-direction:column; gap: var(--elem-gap);">
-        <ul class="feature-list">
-          <li><strong>核心局限：</strong>缺乏物理真实环境下的操作感知，没有"产品手感"</li>
-          <li><strong>真实痛点：</strong>以 MOI 新增"模型管理"为例——AI 无法仅凭公开文档还原底层交互异常流和设计逻辑</li>
-          <li><strong>应对姿势：</strong>PM 必须亲自跑通全流程 → 截图录屏 → 将零散资料喂给 AI 归纳（AI 只能做<em>后置整理</em>，不能前置生成）</li>
-        </ul>
-        <div class="pull-quote">
-          <span class="q-mark">"</span>
-          <p>期待类似 <em>OpenClaw</em> 这样的端侧 Agent 直接接管电脑，自动完成竞品遍历并生成详尽"使用手册"乃至反向 PRD。</p>
+      <!-- Left: background / AI can't / ideal state -->
+      <div style="display:flex; flex-direction:column; gap: clamp(0.9rem, 2.2vh, 1.6rem);">
+
+        <!-- 背景 -->
+        <div>
+          <div style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.45em;">背景</div>
+          <ul class="feature-list" style="gap: clamp(0.35rem, 0.9vh, 0.6rem);">
+            <li>MOI 近期新增 <strong>Notebooks</strong> 页面</li>
+            <li>需要搞清楚：基础操作有哪些、核心交互逻辑是什么</li>
+            <li>以及与竞品相比有哪些差异和设计取舍</li>
+          </ul>
         </div>
+
+        <!-- AI 做不到 -->
+        <div>
+          <div style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--crimson); opacity:0.8; margin-bottom:0.45em;">AI 做不到的事</div>
+          <ul class="feature-list" style="gap: clamp(0.35rem, 0.9vh, 0.6rem);">
+            <li>无法替代"亲手点"——<em>产品手感</em>只有真实操作才能感知</li>
+            <li>无法还原边缘逻辑：加载态、异常流转、权限卡点不写在文档里</li>
+            <li>给它截图可以帮你整理，但<em>前置生成</em>靠不住</li>
+          </ul>
+        </div>
+
+        <!-- 理想状态 -->
+        <div>
+          <div style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.45em;">理想的 AI 状态</div>
+          <div class="pull-quote" style="margin:0; padding: clamp(0.4rem,0.9vh,0.7rem) clamp(0.6rem,1.2vw,1rem);">
+            <span class="q-mark">"</span>
+            <p>Agent 直接接管电脑，自动点遍 Notebooks 全流程，输出完整使用手册乃至<em>反向 PRD</em>——类似 OpenClaw 的端侧能力。</p>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Right: full screenshot -->
-      <div style="display:flex; flex-direction:column; gap:0.4em;">
+      <!-- Right: full screenshot, vertically centered -->
+      <div style="display:flex; flex-direction:column; justify-content:center; gap:0.4em; height:100%;">
         <img
           src="snowflake-moi.png"
-          alt="MOI 模型管理页面 — Snowflake 竞品截图"
+          alt="MOI Notebooks 页面 — Snowflake 竞品截图"
           style="
             width: 100%;
             height: auto;
-            max-height: min(62vh, 500px);
+            max-height: min(60vh, 480px);
             object-fit: contain;
             object-position: top left;
             border: 1px solid var(--rule);
@@ -1608,7 +1858,7 @@
           "
         >
         <p style="font-size:var(--caption-size); color:var(--ink-faint); font-style:italic; text-align:right;">
-          MOI · 模型管理页面 — Snowflake 真实竞品界面
+          MOI · Notebooks 页面 — Snowflake 真实竞品界面
         </p>
       </div>
     </div>
@@ -1650,76 +1900,86 @@
     <h2 class="slide-h2 reveal d2">打破瀑布流：<em>原型先行</em>与文档反推</h2>
     <div class="wide-rule reveal d3"></div>
 
-    <!-- Traditional workflow (top, centered) -->
-    <div class="reveal d4" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
-      <div class="trad-flow-label">传统工作流</div>
-      <div class="trad-steps" style="justify-content:center;">
-        <span class="trad-step">画原型</span>
-        <span class="trad-arrow">→</span>
-        <span class="trad-step">写文档</span>
-        <span class="trad-arrow">→</span>
-        <span class="trad-step">评审</span>
-      </div>
-      <p class="trad-pain">文档与原型割裂，评审时才发现逻辑漏洞，返工成本高</p>
-    </div>
+    <!-- Two-half container: traditional top, AI bottom -->
+    <div style="display:flex; flex-direction:column; flex:1; min-height:0; gap:0;">
 
-    <!-- Horizontal divider with label -->
-    <div class="reveal d4" style="display:flex; align-items:center; gap:0.8em; margin: clamp(0.3rem, 1vh, 0.7rem) 0;">
-      <div style="flex:1; height:1px; background:var(--rule);"></div>
-      <span style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--crimson); opacity:0.6; white-space:nowrap;">AI 敏捷闭环</span>
-      <div style="flex:1; height:1px; background:var(--rule);"></div>
-    </div>
+      <!-- TOP HALF: Traditional workflow — centered -->
+      <div class="reveal d4" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-bottom:1px solid var(--rule); padding: clamp(0.4rem,1.2vh,0.8rem) 0;">
+        <div class="trad-flow-label">传统工作流</div>
+        <div class="trad-steps" style="justify-content:center; margin:0.5em 0;">
+          <span class="trad-step">画<strong>原型</strong></span>
+          <span class="trad-arrow">→</span>
+          <span class="trad-step">写文档</span>
+          <span class="trad-arrow">→</span>
+          <span class="trad-step">评审</span>
+        </div>
+        <p class="trad-pain">文档与<strong>原型</strong>割裂，评审时才发现逻辑漏洞，返工成本高</p>
+      </div>
 
-    <!-- New AI workflow (below) -->
-    <div class="step-flow reveal d5" style="gap: clamp(0.3rem, 0.8vw, 0.6rem);">
-      <div class="step-card">
-        <span class="step-num">01</span>
-        <span class="step-title">原型先行</span>
-        <span class="step-text">Cursor 生成原型，调试至逻辑跑通</span>
-      </div>
-      <span class="step-arrow">→</span>
-      <div class="step-card">
-        <span class="step-num">02</span>
-        <span class="step-title">反推文档</span>
-        <span class="step-text">Gemini 基于原型反向撰写 PRD</span>
-      </div>
-      <span class="step-arrow">→</span>
-      <div class="step-card highlight">
-        <span class="step-num">03</span>
-        <span class="step-title">文档盲测</span>
-        <span class="step-text">仅凭 PRD 让 AI 重新生成原型</span>
-      </div>
-      <span class="step-arrow">→</span>
-      <div class="step-card highlight">
-        <span class="step-num">04</span>
-        <span class="step-title">纠偏迭代</span>
-        <span class="step-text">差异倒逼修改 PRD 逻辑遗漏</span>
-      </div>
-      <span class="step-arrow">→</span>
-      <div class="step-card">
-        <span class="step-num">05</span>
-        <span class="step-title">人工 Review</span>
-        <span class="step-text">PM 兜底 + 在线原型开评审会</span>
-      </div>
-    </div>
+      <!-- BOTTOM HALF: AI workflow — centered, with tool info + deliverable node -->
+      <div class="reveal d5" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: clamp(0.4rem,1.2vh,0.8rem) 0;">
+        <div style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--crimson); opacity:0.7; margin-bottom:0.5em;">AI 敏捷闭环</div>
+        <div class="step-flow" style="gap:clamp(0.18rem,0.45vw,0.4rem); align-items:stretch; width:100%;">
 
-    <!-- AI Tools -->
-    <div class="ai-tools-row reveal d5" style="margin-top: clamp(0.4rem, 1.2vh, 1rem);">
-      <div class="ai-tool-card">
-        <span class="ai-tool-name">Cursor</span>
-        <span class="ai-tool-model">Claude Sonnet 4.6</span>
-        <span class="ai-tool-desc">原型生成与代码验证，所见即所得地跑通交互逻辑</span>
-      </div>
-      <div class="ai-tool-card">
-        <span class="ai-tool-name">Gemini</span>
-        <span class="ai-tool-model">Google Gemini 2.5 Pro</span>
-        <span class="ai-tool-desc">撰写结构化 PRD，记忆系统出色——可沉淀 PM 身份、产品背景等长期上下文</span>
-      </div>
-    </div>
+          <!-- 01 原型先行 · Cursor -->
+          <div class="step-card">
+            <span class="step-num">01</span>
+            <span class="step-title">原型先行</span>
+            <span class="step-text"><strong>Cursor</strong> 生成<strong>原型</strong>，调试至逻辑跑通</span>
+            <div style="display:flex;align-items:center;gap:0.3em;margin-top:0.3em;padding-top:0.3em;border-top:1px solid var(--rule);">
+              <img src="cursor-icon.png" style="width:clamp(12px,1.4vw,16px);height:clamp(12px,1.4vw,16px);object-fit:contain;border-radius:2px;flex-shrink:0;">
+              <a href="https://cursor.sh" target="_blank" style="font-size:var(--caption-size);color:var(--sage);text-decoration:none;letter-spacing:0.04em;white-space:nowrap;">cursor.sh ↗</a>
+            </div>
+          </div>
+          <span class="step-arrow">→</span>
 
-    <div style="display: flex; gap: var(--elem-gap); flex-wrap: wrap;" class="reveal d6">
-      <span class="deliverable">最终交付：无懈可击的 PRD 文档</span>
-      <span class="deliverable">+ 部署到 Vercel 的真实交互链接</span>
+          <!-- 02 反推文档 · Gemini -->
+          <div class="step-card">
+            <span class="step-num">02</span>
+            <span class="step-title">反推文档</span>
+            <span class="step-text"><strong>Gemini</strong> 基于<strong>原型</strong>反向写 <strong>PRD</strong></span>
+            <div style="display:flex;align-items:center;gap:0.3em;margin-top:0.3em;padding-top:0.3em;border-top:1px solid var(--rule);">
+              <img src="gemini-icon.png" style="width:clamp(12px,1.4vw,16px);height:clamp(12px,1.4vw,16px);object-fit:contain;flex-shrink:0;">
+              <a href="https://gemini.google.com" target="_blank" style="font-size:var(--caption-size);color:var(--sage);text-decoration:none;letter-spacing:0.04em;white-space:nowrap;">Gemini 2.5 Pro ↗</a>
+            </div>
+          </div>
+          <span class="step-arrow">→</span>
+
+          <!-- 03 文档盲测 -->
+          <div class="step-card highlight">
+            <span class="step-num">03</span>
+            <span class="step-title">文档盲测</span>
+            <span class="step-text">仅凭 <strong>PRD</strong> 重新生成<strong>原型</strong></span>
+          </div>
+          <span class="step-arrow">→</span>
+
+          <!-- 04 纠偏迭代 -->
+          <div class="step-card highlight">
+            <span class="step-num">04</span>
+            <span class="step-title">纠偏迭代</span>
+            <span class="step-text">差异倒逼修改 <strong>PRD</strong> 逻辑遗漏</span>
+          </div>
+          <span class="step-arrow">→</span>
+
+          <!-- 05 人工 Review -->
+          <div class="step-card">
+            <span class="step-num">05</span>
+            <span class="step-title">人工 Review</span>
+            <span class="step-text">PM 兜底 + 在线<strong>原型</strong>开评审会</span>
+          </div>
+          <span class="step-arrow">→</span>
+
+          <!-- 交付物节点 -->
+          <div class="step-card" style="border-top-color:var(--amber);background:rgba(212,160,23,0.05);flex:0.85;">
+            <span class="step-num" style="color:var(--amber);">✦</span>
+            <span class="step-title">交付物</span>
+            <span class="step-text"><strong>PRD</strong> 文档</span>
+            <span class="step-text">Vercel 链接</span>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1752,7 +2012,7 @@
           <div class="evo-arrow-down" style="font-size: var(--body-size);">↓</div>
           <div class="evo-row">
             <span class="evo-label" style="font-size: var(--small-size);">AI 时代</span>
-            <span class="evo-chain new-chain" style="font-size: var(--body-size);">(PRD + Dev Design + 测试用例) → 代码</span>
+            <span class="evo-chain new-chain" style="font-size: var(--body-size);">需求 → (PRD + Dev Design + 测试用例) → 代码</span>
           </div>
           <div class="evo-arrow-down" style="font-size: var(--body-size);">↓</div>
           <div class="evo-row">
@@ -1778,10 +2038,87 @@
           </li>
           <li><strong>批判性质疑：</strong>原型只能呈现 UI/UX 的"显性逻辑"，难以承载"隐性逻辑"（算法规则、并发处理、异常流转）</li>
         </ul>
-        <div class="accent-box">
-          <div class="box-label">协作新范式</div>
-          <p style="font-size: var(--body-size);">原型承载"所见即所得"的体验层，PRD 退阶为纯粹的<strong>后台规则库</strong>——凡能在原型演示的就不在文档废话。</p>
+        <!-- 前后端类比图 -->
+        <div style="display:flex; flex-direction:column; gap:0; margin-bottom:0.1em;">
+          <div style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.4em;">协作新范式 · 前后端类比</div>
+
+          <!-- 前端层 = 原型 -->
+          <div style="
+            background: rgba(74,122,90,0.07);
+            border: 1px solid rgba(74,122,90,0.35);
+            border-radius: 3px 3px 0 0;
+            padding: clamp(0.35rem,0.9vh,0.6rem) clamp(0.5rem,1vw,0.8rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8em;
+          ">
+            <div style="flex:1;">
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); margin-bottom:0.15em;">前端</div>
+              <div style="font-size:var(--body-size); font-weight:600; color:var(--ink);">原型 Prototype</div>
+              <div style="font-size:var(--small-size); color:var(--ink-muted); margin-top:0.1em;">可视 · 可点 · 所见即所得 · UI/UX 体验层</div>
+            </div>
+            <div style="font-size:clamp(1.4rem,2.2vw,2rem); opacity:0.2; flex-shrink:0; font-family:var(--font-serif);">◧</div>
+          </div>
+
+          <!-- 连接线 -->
+          <div style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4em;
+            background: var(--bg-warm);
+            border-left: 1px solid var(--rule);
+            border-right: 1px solid var(--rule);
+            padding: 0.2em 0.5em;
+          ">
+            <div style="flex:1; height:1px; background:var(--rule);"></div>
+            <span style="font-size:var(--caption-size); color:var(--crimson); opacity:0.6; letter-spacing:0.1em; white-space:nowrap;">⇅ 相互驱动，各司其职</span>
+            <div style="flex:1; height:1px; background:var(--rule);"></div>
+          </div>
+
+          <!-- 后端层 = PRD -->
+          <div style="
+            background: rgba(196,30,58,0.04);
+            border: 1px solid rgba(196,30,58,0.25);
+            border-radius: 0 0 3px 3px;
+            padding: clamp(0.35rem,0.9vh,0.6rem) clamp(0.5rem,1vw,0.8rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8em;
+          ">
+            <div style="flex:1;">
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--crimson); margin-bottom:0.15em;">后端</div>
+              <div style="font-size:var(--body-size); font-weight:600; color:var(--ink);"><s style="opacity:0.4; font-weight:400;">PRD</s> BRD <span style="font-size:var(--small-size); font-weight:400; color:var(--ink-muted);">后端需求文档</span></div>
+              <div style="font-size:var(--small-size); color:var(--ink-muted); margin-top:0.1em;">业务规则 · 异常流转 · 并发处理 · 算法逻辑</div>
+            </div>
+            <div style="font-size:clamp(1.4rem,2.2vw,2rem); opacity:0.2; flex-shrink:0; font-family:var(--font-serif);">⚙</div>
+          </div>
+
+          <p style="font-size:var(--small-size); color:var(--ink-faint); font-style:italic; margin-top:0.35em; line-height:1.4;">凡能在原型演示的，就不在文档废话。</p>
         </div>
+
+        <!-- Podcast screenshot -->
+        <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny"
+           target="_blank" style="display:block; text-decoration:none; margin-top:var(--elem-gap);">
+          <img
+            src="pragmatic-engineer-podcast.png"
+            alt="Building Claude Code with Boris Cherny — The Pragmatic Engineer"
+            style="
+              width: 100%;
+              height: auto;
+              display: block;
+              border: 1px solid var(--rule);
+              border-radius: 3px;
+              opacity: 0.88;
+            "
+          >
+          <p style="font-size:var(--caption-size); color:var(--ink-faint); font-style:italic; text-align:right; margin-top:0.2em;">
+            Building Claude Code with Boris Cherny · The Pragmatic Engineer ↗
+          </p>
+        </a>
+
       </div>
     </div>
   </div>
@@ -1839,10 +2176,136 @@
           <li>全部答完 = PRD 核心逻辑自动成型，几乎<em>不会有遗漏</em></li>
         </ul>
 
-        <div class="pull-quote">
+        <div class="pull-quote" style="padding: clamp(0.3rem,0.7vh,0.5rem) clamp(0.6rem,1.2vw,1rem);">
           <span class="q-mark">"</span>
           <p>主流程清晰 + AI 的一堆问题全解答 = <em>坚如磐石</em>的核心功能</p>
         </div>
+
+        <!-- Scrolling questions — below left content -->
+        <div class="qs-container" style="flex:1;">
+          <div class="qs-header">
+            <div class="qs-header-label">AI 输出示例 · Notebooks 功能灵魂拷问</div>
+            <div class="qs-header-sub">悬停暂停</div>
+          </div>
+          <div class="qs-viewport">
+            <div class="qs-track">
+              <div class="qs-cat">基础操作</div>
+              <div class="qs-item"><span class="qs-num">01</span><span>支持哪些编程语言？Python、SQL、Markdown 之外还有吗？</span></div>
+              <div class="qs-item"><span class="qs-num">02</span><span>如何创建一个新的 Notebook？入口在哪里？</span></div>
+              <div class="qs-item"><span class="qs-num">03</span><span>如何修改 Notebook 的名称？</span></div>
+              <div class="qs-item"><span class="qs-num">04</span><span>如何复制/克隆一个 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">05</span><span>如何删除 Notebook？是否有回收站或撤销删除机制？</span></div>
+              <div class="qs-item"><span class="qs-num">06</span><span>如何在 Notebook 内添加、删除、调整 Cell 的顺序？</span></div>
+              <div class="qs-item"><span class="qs-num">07</span><span>如何运行单个 Cell vs 运行全部 Cell？两者有什么区别？</span></div>
+              <div class="qs-item"><span class="qs-num">08</span><span>如何折叠/展开 Cell 的输出内容？</span></div>
+              <div class="qs-item"><span class="qs-num">09</span><span>Notebook 是否支持自动保存？多久保存一次？</span></div>
+              <div class="qs-item"><span class="qs-num">10</span><span>意外关闭浏览器后，未保存的内容是否会丢失？</span></div>
+              <div class="qs-cat">定时任务</div>
+              <div class="qs-item"><span class="qs-num">11</span><span>如何为 Notebook 创建定时任务（Scheduled Task）？</span></div>
+              <div class="qs-item"><span class="qs-num">12</span><span>支持哪些调度频率？是否支持自定义 cron 表达式？</span></div>
+              <div class="qs-item"><span class="qs-num">13</span><span>如何修改已有定时任务的执行时间？</span></div>
+              <div class="qs-item"><span class="qs-num">14</span><span>如何暂停/恢复定时任务，而不删除它？</span></div>
+              <div class="qs-item"><span class="qs-num">15</span><span>如何删除定时任务？删除后是否影响 Notebook 本身？</span></div>
+              <div class="qs-item"><span class="qs-num">16</span><span>一个 Notebook 可以同时绑定多个定时任务吗？</span></div>
+              <div class="qs-item"><span class="qs-num">17</span><span>定时任务执行时，使用的是哪个用户的权限？</span></div>
+              <div class="qs-item"><span class="qs-num">18</span><span>定时任务是否支持传入外部参数？</span></div>
+              <div class="qs-cat">运行状态与日志</div>
+              <div class="qs-item"><span class="qs-num">19</span><span>在哪里查看定时任务的历史运行记录？</span></div>
+              <div class="qs-item"><span class="qs-num">20</span><span>在哪里查看每次运行的日志详情和错误信息？</span></div>
+              <div class="qs-item"><span class="qs-num">21</span><span>如何查看 Notebook 当前的运行状态？</span></div>
+              <div class="qs-item"><span class="qs-num">22</span><span>如何强制停止正在运行的 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">23</span><span>如何清除所有 Cell 的输出内容，重置运行状态？</span></div>
+              <div class="qs-item"><span class="qs-num">24</span><span>定时任务失败时，如何收到告警通知？支持邮件/Slack/webhook？</span></div>
+              <div class="qs-item"><span class="qs-num">25</span><span>运行日志保留多少天？是否可以配置保留策略？</span></div>
+              <div class="qs-item"><span class="qs-num">26</span><span>如何区分"运行中"、"排队等待"、"已完成"三种状态？</span></div>
+              <div class="qs-item"><span class="qs-num">27</span><span>运行超时的默认时长是多少？如何修改超时设置？</span></div>
+              <div class="qs-cat">数据与计算资源</div>
+              <div class="qs-item"><span class="qs-num">28</span><span>Python Cell 和 SQL Cell 之间如何传递数据和变量？</span></div>
+              <div class="qs-item"><span class="qs-num">29</span><span>如何在 Notebook 中连接 Snowflake 表以外的外部数据源？</span></div>
+              <div class="qs-item"><span class="qs-num">30</span><span>向 Snowflake 表写入数据需要哪些权限？谁来授权？</span></div>
+              <div class="qs-item"><span class="qs-num">31</span><span>如何在 Notebook 中安装第三方 Python 包？</span></div>
+              <div class="qs-item"><span class="qs-num">32</span><span>安装的包在会话结束后是否会持久化？</span></div>
+              <div class="qs-item"><span class="qs-num">33</span><span>如何切换/选择不同规格的计算资源（Warehouse 大小）？</span></div>
+              <div class="qs-item"><span class="qs-num">34</span><span>如何查看当前 Notebook 实时占用的 CPU 和内存资源？</span></div>
+              <div class="qs-item"><span class="qs-num">35</span><span>单个 Cell 输出的数据量有没有上限？超出会怎样？</span></div>
+              <div class="qs-item"><span class="qs-num">36</span><span>Notebook 的计费方式是怎样的？按运行时长还是按 Warehouse 消耗量？</span></div>
+              <div class="qs-cat">版本控制与协作</div>
+              <div class="qs-item"><span class="qs-num">37</span><span>Notebook 是否支持版本历史？如何回溯到历史版本？</span></div>
+              <div class="qs-item"><span class="qs-num">38</span><span>如何与 Git 仓库集成？支持 Push/Pull 吗？</span></div>
+              <div class="qs-item"><span class="qs-num">39</span><span>多人同时编辑同一个 Notebook 时，如何处理冲突？</span></div>
+              <div class="qs-item"><span class="qs-num">40</span><span>如何与其他用户共享 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">41</span><span>是否支持只读模式，防止他人误操作？</span></div>
+              <div class="qs-item"><span class="qs-num">42</span><span>如何设置 Notebook 的访问权限（Owner / Editor / Viewer）？</span></div>
+              <div class="qs-item"><span class="qs-num">43</span><span>如何查看谁在什么时间最后修改了 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">44</span><span>是否支持评论/注释功能？能否 @mention 通知他人？</span></div>
+              <div class="qs-cat">导入导出与集成</div>
+              <div class="qs-item"><span class="qs-num">45</span><span>如何将 Notebook 导出为 PDF / HTML / .ipynb 格式？</span></div>
+              <div class="qs-item"><span class="qs-num">46</span><span>如何将外部 .ipynb 文件导入到平台？</span></div>
+              <div class="qs-item"><span class="qs-num">47</span><span>导出文件时，图表和可视化内容是否会一并保留？</span></div>
+              <div class="qs-item"><span class="qs-num">48</span><span>如何在 Notebook 中调用外部 API 接口？是否有网络访问限制？</span></div>
+              <div class="qs-item"><span class="qs-num">49</span><span>如何在 Notebook 中使用 Snowpark？与直接写 SQL 有何本质区别？</span></div>
+              <div class="qs-item"><span class="qs-num">50</span><span>免费套餐的 Notebook 有哪些功能限制？哪些是付费专属？</span></div>
+              <!-- 无缝循环复制 -->
+              <div class="qs-cat">基础操作</div>
+              <div class="qs-item"><span class="qs-num">01</span><span>支持哪些编程语言？Python、SQL、Markdown 之外还有吗？</span></div>
+              <div class="qs-item"><span class="qs-num">02</span><span>如何创建一个新的 Notebook？入口在哪里？</span></div>
+              <div class="qs-item"><span class="qs-num">03</span><span>如何修改 Notebook 的名称？</span></div>
+              <div class="qs-item"><span class="qs-num">04</span><span>如何复制/克隆一个 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">05</span><span>如何删除 Notebook？是否有回收站或撤销删除机制？</span></div>
+              <div class="qs-item"><span class="qs-num">06</span><span>如何在 Notebook 内添加、删除、调整 Cell 的顺序？</span></div>
+              <div class="qs-item"><span class="qs-num">07</span><span>如何运行单个 Cell vs 运行全部 Cell？两者有什么区别？</span></div>
+              <div class="qs-item"><span class="qs-num">08</span><span>如何折叠/展开 Cell 的输出内容？</span></div>
+              <div class="qs-item"><span class="qs-num">09</span><span>Notebook 是否支持自动保存？多久保存一次？</span></div>
+              <div class="qs-item"><span class="qs-num">10</span><span>意外关闭浏览器后，未保存的内容是否会丢失？</span></div>
+              <div class="qs-cat">定时任务</div>
+              <div class="qs-item"><span class="qs-num">11</span><span>如何为 Notebook 创建定时任务（Scheduled Task）？</span></div>
+              <div class="qs-item"><span class="qs-num">12</span><span>支持哪些调度频率？是否支持自定义 cron 表达式？</span></div>
+              <div class="qs-item"><span class="qs-num">13</span><span>如何修改已有定时任务的执行时间？</span></div>
+              <div class="qs-item"><span class="qs-num">14</span><span>如何暂停/恢复定时任务，而不删除它？</span></div>
+              <div class="qs-item"><span class="qs-num">15</span><span>如何删除定时任务？删除后是否影响 Notebook 本身？</span></div>
+              <div class="qs-item"><span class="qs-num">16</span><span>一个 Notebook 可以同时绑定多个定时任务吗？</span></div>
+              <div class="qs-item"><span class="qs-num">17</span><span>定时任务执行时，使用的是哪个用户的权限？</span></div>
+              <div class="qs-item"><span class="qs-num">18</span><span>定时任务是否支持传入外部参数？</span></div>
+              <div class="qs-cat">运行状态与日志</div>
+              <div class="qs-item"><span class="qs-num">19</span><span>在哪里查看定时任务的历史运行记录？</span></div>
+              <div class="qs-item"><span class="qs-num">20</span><span>在哪里查看每次运行的日志详情和错误信息？</span></div>
+              <div class="qs-item"><span class="qs-num">21</span><span>如何查看 Notebook 当前的运行状态？</span></div>
+              <div class="qs-item"><span class="qs-num">22</span><span>如何强制停止正在运行的 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">23</span><span>如何清除所有 Cell 的输出内容，重置运行状态？</span></div>
+              <div class="qs-item"><span class="qs-num">24</span><span>定时任务失败时，如何收到告警通知？支持邮件/Slack/webhook？</span></div>
+              <div class="qs-item"><span class="qs-num">25</span><span>运行日志保留多少天？是否可以配置保留策略？</span></div>
+              <div class="qs-item"><span class="qs-num">26</span><span>如何区分"运行中"、"排队等待"、"已完成"三种状态？</span></div>
+              <div class="qs-item"><span class="qs-num">27</span><span>运行超时的默认时长是多少？如何修改超时设置？</span></div>
+              <div class="qs-cat">数据与计算资源</div>
+              <div class="qs-item"><span class="qs-num">28</span><span>Python Cell 和 SQL Cell 之间如何传递数据和变量？</span></div>
+              <div class="qs-item"><span class="qs-num">29</span><span>如何在 Notebook 中连接 Snowflake 表以外的外部数据源？</span></div>
+              <div class="qs-item"><span class="qs-num">30</span><span>向 Snowflake 表写入数据需要哪些权限？谁来授权？</span></div>
+              <div class="qs-item"><span class="qs-num">31</span><span>如何在 Notebook 中安装第三方 Python 包？</span></div>
+              <div class="qs-item"><span class="qs-num">32</span><span>安装的包在会话结束后是否会持久化？</span></div>
+              <div class="qs-item"><span class="qs-num">33</span><span>如何切换/选择不同规格的计算资源（Warehouse 大小）？</span></div>
+              <div class="qs-item"><span class="qs-num">34</span><span>如何查看当前 Notebook 实时占用的 CPU 和内存资源？</span></div>
+              <div class="qs-item"><span class="qs-num">35</span><span>单个 Cell 输出的数据量有没有上限？超出会怎样？</span></div>
+              <div class="qs-item"><span class="qs-num">36</span><span>Notebook 的计费方式是怎样的？按运行时长还是按 Warehouse 消耗量？</span></div>
+              <div class="qs-cat">版本控制与协作</div>
+              <div class="qs-item"><span class="qs-num">37</span><span>Notebook 是否支持版本历史？如何回溯到历史版本？</span></div>
+              <div class="qs-item"><span class="qs-num">38</span><span>如何与 Git 仓库集成？支持 Push/Pull 吗？</span></div>
+              <div class="qs-item"><span class="qs-num">39</span><span>多人同时编辑同一个 Notebook 时，如何处理冲突？</span></div>
+              <div class="qs-item"><span class="qs-num">40</span><span>如何与其他用户共享 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">41</span><span>是否支持只读模式，防止他人误操作？</span></div>
+              <div class="qs-item"><span class="qs-num">42</span><span>如何设置 Notebook 的访问权限（Owner / Editor / Viewer）？</span></div>
+              <div class="qs-item"><span class="qs-num">43</span><span>如何查看谁在什么时间最后修改了 Notebook？</span></div>
+              <div class="qs-item"><span class="qs-num">44</span><span>是否支持评论/注释功能？能否 @mention 通知他人？</span></div>
+              <div class="qs-cat">导入导出与集成</div>
+              <div class="qs-item"><span class="qs-num">45</span><span>如何将 Notebook 导出为 PDF / HTML / .ipynb 格式？</span></div>
+              <div class="qs-item"><span class="qs-num">46</span><span>如何将外部 .ipynb 文件导入到平台？</span></div>
+              <div class="qs-item"><span class="qs-num">47</span><span>导出文件时，图表和可视化内容是否会一并保留？</span></div>
+              <div class="qs-item"><span class="qs-num">48</span><span>如何在 Notebook 中调用外部 API 接口？是否有网络访问限制？</span></div>
+              <div class="qs-item"><span class="qs-num">49</span><span>如何在 Notebook 中使用 Snowpark？与直接写 SQL 有何本质区别？</span></div>
+              <div class="qs-item"><span class="qs-num">50</span><span>免费套餐的 Notebook 有哪些功能限制？哪些是付费专属？</span></div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Right: full prompt -->
