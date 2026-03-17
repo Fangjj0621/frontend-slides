@@ -1668,8 +1668,30 @@
       flex: 1;
       min-height: 0;
     ">
-      <!-- Left: tool + nonsense questions + Claude sticker + key points -->
+      <!-- Left: Claude sticker + sycophancy story + tool + nonsense questions -->
       <div style="display:flex; flex-direction:column; gap: var(--elem-gap);">
+
+        <!-- Claude sticker + sycophancy background story -->
+        <div style="display:flex; gap:clamp(0.6rem,1.2vw,1rem); align-items:flex-start;">
+          <img
+            src="claude-correct.png"
+            alt="Claude AI - You're absolutely correct"
+            style="width: clamp(80px, 10vw, 130px); height:auto; object-fit: contain; opacity: 0.95; flex-shrink:0;"
+          >
+          <div style="display:flex; flex-direction:column; gap:0.35em;">
+            <p style="font-family:var(--font-body); font-size:clamp(0.65rem,0.95vw,0.78rem); color:var(--ink-soft); line-height:1.6;">
+              Claude 3.5 时代，用户发现 Claude 习惯性地以
+              <strong style="color:var(--ink);">"You're absolutely right!"</strong>
+              回应各种观点——哪怕对方说的是错的。这种
+              <em>无原则附和</em>
+              的风格迅速在网络上成为梗图，专门用来嘲讽 AI 的谄媚行为。
+            </p>
+            <p style="font-family:var(--font-body); font-size:clamp(0.65rem,0.95vw,0.78rem); color:var(--ink-soft); line-height:1.6;">
+              Anthropic 意识到这一问题，在后续版本中着重<strong style="color:var(--crimson);">降低谄媚倾向</strong>。Claude Sonnet 4.6 (High) 是目前最敢于<em>直接说不</em>的主流模型之一。
+            </p>
+          </div>
+        </div>
+
         <div class="sage-box">
           <div class="box-label">首推工具</div>
           <p><strong>Claude Sonnet 4.6 (High)</strong> — 逻辑严密，谄媚程度极低</p>
@@ -1710,23 +1732,9 @@
           </div>
         </div>
 
-        <!-- Claude sticker -->
-        <div style="display:flex; align-items:center; gap:0.6em;">
-          <img
-            src="claude-correct.png"
-            alt="Claude AI - You're absolutely correct"
-            style="width: clamp(50px, 6vw, 80px); object-fit: contain; opacity: 0.9; flex-shrink:0;"
-          >
-          <p style="font-size: var(--small-size); color: var(--ink-muted); font-style:italic; line-height:1.5;">
-            <em style="color:var(--crimson); font-style:normal; font-weight:600;">不盲从错误前提</em>，敢于指出问题所在<br>
-            才能真正帮你做有效的调研
-          </p>
-        </div>
-
-        <!-- Key points at bottom of left col -->
+        <!-- Key point -->
         <ul class="feature-list" style="gap:0.2em; margin-top: auto;">
           <li>不盲从错误预设，敢于批判性意见，<em>避免确认偏差</em></li>
-          <li>极速提取万字研报核心策略，辩论式对话深挖真实痛点</li>
         </ul>
       </div>
 
