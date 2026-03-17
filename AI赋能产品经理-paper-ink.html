@@ -826,35 +826,35 @@
 
     /* Traditional flow */
     .trad-flow-label {
-      font-size: var(--caption-size);
+      font-size: var(--small-size);
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--ink-faint);
-      margin-bottom: 0.5em;
+      margin-bottom: 0.6em;
     }
     .trad-steps {
       display: flex;
       align-items: center;
-      gap: 0.5em;
+      gap: clamp(0.5em, 1vw, 0.9em);
       flex-wrap: wrap;
     }
     .trad-step {
-      font-size: var(--body-size);
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
       color: var(--ink-faint);
       background: var(--bg-darker);
       border: 1px solid var(--rule);
-      padding: 0.25em 0.65em;
+      padding: 0.3em 0.9em;
       border-radius: 2px;
       text-decoration: line-through;
       text-decoration-color: rgba(0,0,0,0.2);
     }
     .trad-arrow { color: var(--ink-faint); font-size: var(--small-size); }
     .trad-pain {
-      margin-top: 0.6em;
-      font-size: var(--small-size);
+      margin-top: 0.7em;
+      font-size: clamp(0.72rem, 1.1vw, 0.88rem);
       color: var(--ink-faint);
       font-style: italic;
-      line-height: 1.5;
+      line-height: 1.55;
     }
 
     /* AI tools row */
@@ -937,11 +937,11 @@
       flex: 1;
       background: var(--bg-warm);
       border: 1px solid var(--rule);
-      padding: clamp(0.8rem, 2.2vh, 1.4rem) clamp(0.6rem, 1.4vw, 1rem);
+      padding: clamp(0.9rem, 2.5vh, 1.6rem) clamp(0.7rem, 1.5vw, 1.1rem);
       border-radius: 2px;
       display: flex;
       flex-direction: column;
-      gap: 0.35em;
+      gap: 0.4em;
       position: relative;
     }
     .step-card.highlight {
@@ -956,15 +956,15 @@
       font-weight: 400;
     }
     .step-title {
-      font-size: var(--body-size);
+      font-size: clamp(0.82rem, 1.3vw, 1rem);
       font-weight: 500;
       color: var(--ink);
       line-height: 1.3;
     }
     .step-text {
-      font-size: var(--small-size);
+      font-size: clamp(0.7rem, 1.05vw, 0.84rem);
       color: var(--ink-muted);
-      line-height: 1.45;
+      line-height: 1.5;
       font-weight: 300;
     }
     .step-arrow {
@@ -1362,37 +1362,38 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: calc(var(--gap) * 0.7);
+      gap: clamp(0.35rem, 0.9vh, 0.6rem);
     }
 
     .rule-item {
       display: flex;
-      gap: clamp(0.8rem, 2vw, 1.5rem);
+      gap: clamp(0.6rem, 1.5vw, 1rem);
       align-items: flex-start;
-      padding-bottom: calc(var(--gap) * 0.7);
+      padding-bottom: clamp(0.35rem, 0.9vh, 0.6rem);
       border-bottom: 1px solid var(--rule);
     }
     .rule-item:last-child { border-bottom: none; padding-bottom: 0; }
 
     .rule-icon {
       font-family: var(--font-serif);
-      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-size: clamp(1rem, 1.8vw, 1.4rem);
       font-weight: 300;
       color: var(--crimson);
       opacity: 0.3;
       flex-shrink: 0;
       line-height: 1;
-      padding-top: 0.05em;
+      padding-top: 0.1em;
+      min-width: clamp(1.2rem, 2vw, 1.8rem);
     }
     .rule-body {}
     .rule-title {
-      font-size: var(--body-size);
-      font-weight: 500;
+      font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+      font-weight: 600;
       color: var(--ink);
-      margin-bottom: 0.2em;
+      margin-bottom: 0.15em;
     }
     .rule-text {
-      font-size: var(--body-size);
+      font-size: clamp(0.65rem, 0.95vw, 0.78rem);
       color: var(--ink-soft);
       line-height: 1.5;
       font-weight: 300;
@@ -1833,9 +1834,88 @@
         <!-- 理想状态 -->
         <div>
           <div style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.45em;">理想的 AI 状态</div>
-          <div class="pull-quote" style="margin:0; padding: clamp(0.4rem,0.9vh,0.7rem) clamp(0.6rem,1.2vw,1rem);">
+          <div class="pull-quote" style="margin:0; padding: clamp(0.3rem,0.7vh,0.55rem) clamp(0.6rem,1.2vw,1rem);">
             <span class="q-mark">"</span>
-            <p>Agent 直接接管电脑，自动点遍 Notebooks 全流程，输出完整使用手册乃至<em>反向 PRD</em>——类似 OpenClaw 的端侧能力。</p>
+            <p>Agent 直接接管电脑，自动点遍 Notebooks 全流程，输出完整使用手册乃至<em>反向 PRD</em></p>
+          </div>
+        </div>
+
+        <!-- Ideal AI flowchart -->
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div style="font-size:var(--small-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.4em;">理想工作流</div>
+          <div style="display:flex; flex-direction:column; align-items:flex-start; gap:0;">
+
+            <!-- Node 1 -->
+            <div style="display:flex; align-items:center; gap:0.5em; width:100%;">
+              <div style="
+                background: var(--bg-darker);
+                border: 1px solid var(--rule);
+                border-left: 2px solid var(--sage);
+                border-radius: 0 2px 2px 0;
+                padding: clamp(0.2rem,0.5vh,0.35rem) clamp(0.4rem,0.8vw,0.6rem);
+                display:flex; align-items:center; gap:0.4em;
+                flex:1;
+              ">
+                <span style="font-size:0.75em; color:var(--sage); opacity:0.7;">①</span>
+                <span style="font-family:var(--font-body); font-size:clamp(0.58rem,0.85vw,0.68rem); color:var(--ink);">PM 输入主干流程 + 目标功能</span>
+              </div>
+            </div>
+
+            <!-- Arrow -->
+            <div style="padding-left:0.7em; color:var(--sage); opacity:0.5; font-size:0.75em; line-height:1.2;">↓</div>
+
+            <!-- Node 2 -->
+            <div style="display:flex; align-items:center; gap:0.5em; width:100%;">
+              <div style="
+                background: var(--bg-darker);
+                border: 1px solid var(--rule);
+                border-left: 2px solid var(--sage);
+                border-radius: 0 2px 2px 0;
+                padding: clamp(0.2rem,0.5vh,0.35rem) clamp(0.4rem,0.8vw,0.6rem);
+                display:flex; align-items:center; gap:0.4em;
+                flex:1;
+              ">
+                <span style="font-size:0.75em; color:var(--sage); opacity:0.7;">②</span>
+                <span style="font-family:var(--font-body); font-size:clamp(0.58rem,0.85vw,0.68rem); color:var(--ink);">Agent 接管电脑，自动点遍全部功能</span>
+              </div>
+            </div>
+
+            <div style="padding-left:0.7em; color:var(--sage); opacity:0.5; font-size:0.75em; line-height:1.2;">↓</div>
+
+            <!-- Node 3 -->
+            <div style="display:flex; align-items:center; gap:0.5em; width:100%;">
+              <div style="
+                background: var(--bg-darker);
+                border: 1px solid var(--rule);
+                border-left: 2px solid var(--sage);
+                border-radius: 0 2px 2px 0;
+                padding: clamp(0.2rem,0.5vh,0.35rem) clamp(0.4rem,0.8vw,0.6rem);
+                display:flex; align-items:center; gap:0.4em;
+                flex:1;
+              ">
+                <span style="font-size:0.75em; color:var(--sage); opacity:0.7;">③</span>
+                <span style="font-family:var(--font-body); font-size:clamp(0.58rem,0.85vw,0.68rem); color:var(--ink);">截图 + 记录每一步交互与边界行为</span>
+              </div>
+            </div>
+
+            <div style="padding-left:0.7em; color:var(--sage); opacity:0.5; font-size:0.75em; line-height:1.2;">↓</div>
+
+            <!-- Node 4 -->
+            <div style="display:flex; align-items:center; gap:0.5em; width:100%;">
+              <div style="
+                background: rgba(74,122,90,0.08);
+                border: 1px solid rgba(74,122,90,0.35);
+                border-left: 2px solid var(--sage);
+                border-radius: 0 2px 2px 0;
+                padding: clamp(0.2rem,0.5vh,0.35rem) clamp(0.4rem,0.8vw,0.6rem);
+                display:flex; align-items:center; gap:0.4em;
+                flex:1;
+              ">
+                <span style="font-size:0.75em; color:var(--sage);">✦</span>
+                <span style="font-family:var(--font-body); font-size:clamp(0.58rem,0.85vw,0.68rem); color:var(--ink); font-weight:500;">输出使用手册 + 反向 PRD</span>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -1844,7 +1924,7 @@
       <!-- Right: full screenshot, vertically centered -->
       <div style="display:flex; flex-direction:column; justify-content:center; gap:0.4em; height:100%;">
         <img
-          src="snowflake-moi.png"
+          src="snowflake-notebooks2.png"
           alt="MOI Notebooks 页面 — Snowflake 竞品截图"
           style="
             width: 100%;
@@ -1904,7 +1984,7 @@
     <div style="display:flex; flex-direction:column; flex:1; min-height:0; gap:0;">
 
       <!-- TOP HALF: Traditional workflow — centered -->
-      <div class="reveal d4" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-bottom:1px solid var(--rule); padding: clamp(0.4rem,1.2vh,0.8rem) 0;">
+      <div class="reveal d4" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; border-bottom:1px solid var(--rule); padding: clamp(0.8rem,2.5vh,1.8rem) 0;">
         <div class="trad-flow-label">传统工作流</div>
         <div class="trad-steps" style="justify-content:center; margin:0.5em 0;">
           <span class="trad-step">画<strong>原型</strong></span>
@@ -1917,9 +1997,9 @@
       </div>
 
       <!-- BOTTOM HALF: AI workflow — centered, with tool info + deliverable node -->
-      <div class="reveal d5" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: clamp(0.4rem,1.2vh,0.8rem) 0;">
+      <div class="reveal d5" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: clamp(0.8rem,2.5vh,1.8rem) 0;">
         <div style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--crimson); opacity:0.7; margin-bottom:0.5em;">AI 敏捷闭环</div>
-        <div class="step-flow" style="gap:clamp(0.18rem,0.45vw,0.4rem); align-items:stretch; width:100%;">
+        <div class="step-flow" style="gap:clamp(0.12rem,0.32vw,0.28rem); align-items:stretch; width:100%;">
 
           <!-- 01 原型先行 · Cursor -->
           <div class="step-card">
@@ -1928,7 +2008,7 @@
             <span class="step-text"><strong>Cursor</strong> 生成<strong>原型</strong>，调试至逻辑跑通</span>
             <div style="display:flex;align-items:center;gap:0.3em;margin-top:0.3em;padding-top:0.3em;border-top:1px solid var(--rule);">
               <img src="cursor-icon.png" style="width:clamp(12px,1.4vw,16px);height:clamp(12px,1.4vw,16px);object-fit:contain;border-radius:2px;flex-shrink:0;">
-              <a href="https://cursor.sh" target="_blank" style="font-size:var(--caption-size);color:var(--sage);text-decoration:none;letter-spacing:0.04em;white-space:nowrap;">cursor.sh ↗</a>
+              <a href="https://cursor.sh" target="_blank" style="font-size:var(--caption-size);color:var(--sage);text-decoration:none;letter-spacing:0.04em;white-space:nowrap;font-weight:700;">cursor ↗</a>
             </div>
           </div>
           <span class="step-arrow">→</span>
@@ -1940,31 +2020,39 @@
             <span class="step-text"><strong>Gemini</strong> 基于<strong>原型</strong>反向写 <strong>PRD</strong></span>
             <div style="display:flex;align-items:center;gap:0.3em;margin-top:0.3em;padding-top:0.3em;border-top:1px solid var(--rule);">
               <img src="gemini-icon.png" style="width:clamp(12px,1.4vw,16px);height:clamp(12px,1.4vw,16px);object-fit:contain;flex-shrink:0;">
-              <a href="https://gemini.google.com" target="_blank" style="font-size:var(--caption-size);color:var(--sage);text-decoration:none;letter-spacing:0.04em;white-space:nowrap;">Gemini 2.5 Pro ↗</a>
+              <a href="https://gemini.google.com" target="_blank" style="font-size:var(--caption-size);color:var(--sage);text-decoration:none;letter-spacing:0.04em;white-space:nowrap;font-weight:700;">Gemini ↗</a>
             </div>
           </div>
           <span class="step-arrow">→</span>
 
-          <!-- 03 文档盲测 -->
-          <div class="step-card highlight">
+          <!-- 03 人工 Review PRD -->
+          <div class="step-card">
             <span class="step-num">03</span>
+            <span class="step-title">人工 Review</span>
+            <span class="step-text">确认 <strong>PRD</strong> 主干逻辑完整，再进盲测</span>
+          </div>
+          <span class="step-arrow">→</span>
+
+          <!-- 04 文档盲测 -->
+          <div class="step-card highlight">
+            <span class="step-num">04</span>
             <span class="step-title">文档盲测</span>
             <span class="step-text">仅凭 <strong>PRD</strong> 重新生成<strong>原型</strong></span>
           </div>
           <span class="step-arrow">→</span>
 
-          <!-- 04 纠偏迭代 -->
+          <!-- 05 纠偏迭代 -->
           <div class="step-card highlight">
-            <span class="step-num">04</span>
+            <span class="step-num">05</span>
             <span class="step-title">纠偏迭代</span>
             <span class="step-text">差异倒逼修改 <strong>PRD</strong> 逻辑遗漏</span>
           </div>
           <span class="step-arrow">→</span>
 
-          <!-- 05 人工 Review -->
+          <!-- 06 终版 Review -->
           <div class="step-card">
-            <span class="step-num">05</span>
-            <span class="step-title">人工 Review</span>
+            <span class="step-num">06</span>
+            <span class="step-title">终版 Review</span>
             <span class="step-text">PM 兜底 + 在线<strong>原型</strong>开评审会</span>
           </div>
           <span class="step-arrow">→</span>
@@ -1973,8 +2061,8 @@
           <div class="step-card" style="border-top-color:var(--amber);background:rgba(212,160,23,0.05);flex:0.85;">
             <span class="step-num" style="color:var(--amber);">✦</span>
             <span class="step-title">交付物</span>
-            <span class="step-text"><strong>PRD</strong> 文档</span>
-            <span class="step-text">Vercel 链接</span>
+            <span class="step-text"><strong>PRD 文档</strong></span>
+            <span class="step-text"><strong>Vercel 链接</strong></span>
           </div>
 
         </div>
@@ -2001,7 +2089,7 @@
     <div class="wide-rule reveal d3"></div>
 
     <div class="think-grid reveal d4" style="gap: clamp(1.5rem, 4vw, 3.5rem);">
-      <div class="think-col">
+      <div class="think-col" style="display:flex; flex-direction:column;">
         <div class="think-col-title" style="font-size: var(--small-size);">思考一</div>
         <div class="think-col-h" style="font-size: clamp(1.1rem, 2.2vw, 1.7rem);">研发链路的升维演进</div>
         <div class="evolution" style="gap: 0.4em;">
@@ -2012,7 +2100,7 @@
           <div class="evo-arrow-down" style="font-size: var(--body-size);">↓</div>
           <div class="evo-row">
             <span class="evo-label" style="font-size: var(--small-size);">AI 时代</span>
-            <span class="evo-chain new-chain" style="font-size: var(--body-size);">需求 → (PRD + Dev Design + 测试用例) → 代码</span>
+            <span class="evo-chain new-chain" style="font-size: var(--body-size);">需求 → (PRD + Dev Design + 测试用例) → 产品</span>
           </div>
           <div class="evo-arrow-down" style="font-size: var(--body-size);">↓</div>
           <div class="evo-row">
@@ -2023,101 +2111,86 @@
         <p style="font-size: var(--body-size); color: var(--ink-muted); font-style: italic; margin-top: 0.5em; line-height: 1.55;">
           PRD 的严密性（能被机器无歧义执行）被提到前所未有的高度。
         </p>
+
+        <!-- Podcast image — bottom of left col -->
+        <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny"
+           target="_blank" style="display:block; text-decoration:none; margin-top:auto; padding-top: var(--elem-gap);">
+          <img
+            src="pragmatic-engineer-podcast.png"
+            alt="Building Claude Code with Boris Cherny — The Pragmatic Engineer"
+            style="width:100%; height:auto; display:block; border:1px solid var(--rule); border-radius:3px; opacity:0.88;"
+          >
+          <p style="font-size:var(--caption-size); color:var(--ink-faint); font-style:italic; text-align:right; margin-top:0.2em;">
+            Building Claude Code with Boris Cherny · The Pragmatic Engineer ↗
+          </p>
+        </a>
+
       </div>
 
       <div class="think-col">
         <div class="think-col-title" style="font-size: var(--small-size);">思考二</div>
         <div class="think-col-h" style="font-size: clamp(1.1rem, 2.2vw, 1.7rem);">"No-PRD" 前沿趋势的冷思考</div>
+
+        <!-- ① 人物履历 -->
+        <div style="border:1px solid var(--rule); border-top:2px solid var(--ink-soft); border-radius:0 0 3px 3px; background:var(--bg-warm); margin-bottom:var(--elem-gap);">
+          <div style="padding:clamp(0.25rem,0.6vh,0.45rem) clamp(0.5rem,1vw,0.8rem); border-bottom:1px solid var(--rule); background:var(--bg-darker); display:flex; justify-content:space-between; align-items:baseline; gap:0.5em;">
+            <span style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft);">Boris Cherny · Claude Code 创始人</span>
+            <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny" target="_blank" style="font-size:var(--caption-size); color:var(--crimson); opacity:0.7; text-decoration:none; white-space:nowrap;">↗ 播客原文</a>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0;">
+            <div style="padding:clamp(0.25rem,0.6vh,0.4rem) clamp(0.5rem,1vw,0.8rem); border-bottom:1px solid var(--rule);">
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); margin-bottom:0.15em;">过往履历</div>
+              <p style="font-family:var(--font-body); font-size:clamp(0.62rem,0.95vw,0.76rem); color:var(--ink-soft); line-height:1.45;">前 Meta <strong>首席工程师（5 年）</strong>，技术书籍 <em>Programming TypeScript</em> 作者。</p>
+            </div>
+            <div style="padding:clamp(0.25rem,0.6vh,0.4rem) clamp(0.5rem,1vw,0.8rem); border-bottom:1px solid var(--rule);">
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); margin-bottom:0.15em;">项目起源</div>
+              <p style="font-family:var(--font-body); font-size:clamp(0.62rem,0.95vw,0.76rem); color:var(--ink-soft); line-height:1.45;">Claude Code 最初是入职 Anthropic <strong>第一个月的业余项目</strong>，内部超过 <strong>80% 工程师每天使用</strong>，最终成为核心正式产品。</p>
+            </div>
+            <div style="padding:clamp(0.25rem,0.6vh,0.4rem) clamp(0.5rem,1vw,0.8rem);">
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--crimson); opacity:0.8; margin-bottom:0.15em;">短暂的 Cursor 之旅</div>
+              <p style="font-family:var(--font-body); font-size:clamp(0.62rem,0.95vw,0.76rem); color:var(--ink-soft); line-height:1.45;">2025 年 7 月加入 Cursor，<strong>仅两周后</strong>因认同 Anthropic <em>"安全放在首位"</em> 的使命火速回归。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ② 他的观点：No-PRD -->
         <ul class="feature-list" style="margin-bottom: var(--elem-gap); font-size: var(--body-size);">
-          <li><strong>前沿动态：</strong>Claude Code 团队已尝试纯靠高保真原型交付，不写 PRD
+          <li><strong>他的实践：</strong>Claude Code 团队已尝试纯靠高保真原型交付，不写 PRD
             <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny"
                target="_blank"
                style="display:inline-flex; align-items:center; gap:3px; margin-left:6px; font-size:var(--caption-size); color:var(--crimson); text-decoration:none; opacity:0.75; font-style:normal; vertical-align:middle; border:1px solid rgba(196,30,58,0.25); padding:0.1em 0.4em; border-radius:2px; white-space:nowrap;">
               ↗ Pragmatic Engineer 播客
             </a>
           </li>
-          <li><strong>批判性质疑：</strong>原型只能呈现 UI/UX 的"显性逻辑"，难以承载"隐性逻辑"（算法规则、并发处理、异常流转）</li>
+          <li><strong>我的质疑：</strong>原型只能呈现"显性逻辑"，难以承载算法规则、并发处理、异常流转等"隐性逻辑"</li>
         </ul>
-        <!-- 前后端类比图 -->
-        <div style="display:flex; flex-direction:column; gap:0; margin-bottom:0.1em;">
-          <div style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.4em;">协作新范式 · 前后端类比</div>
 
-          <!-- 前端层 = 原型 -->
-          <div style="
-            background: rgba(74,122,90,0.07);
-            border: 1px solid rgba(74,122,90,0.35);
-            border-radius: 3px 3px 0 0;
-            padding: clamp(0.35rem,0.9vh,0.6rem) clamp(0.5rem,1vw,0.8rem);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.8em;
-          ">
+        <!-- ③ 我的观点：前后端类比 -->
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:0.4em;">我的观点 · 前后端类比</div>
+          <div style="background:rgba(74,122,90,0.07); border:1px solid rgba(74,122,90,0.35); border-radius:3px 3px 0 0; padding:clamp(0.3rem,0.7vh,0.5rem) clamp(0.5rem,1vw,0.8rem); display:flex; justify-content:space-between; align-items:center; gap:0.8em;">
             <div style="flex:1;">
-              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); margin-bottom:0.15em;">前端</div>
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); margin-bottom:0.1em;">前端</div>
               <div style="font-size:var(--body-size); font-weight:600; color:var(--ink);">原型 Prototype</div>
-              <div style="font-size:var(--small-size); color:var(--ink-muted); margin-top:0.1em;">可视 · 可点 · 所见即所得 · UI/UX 体验层</div>
+              <div style="font-size:var(--small-size); color:var(--ink-muted); margin-top:0.08em;">可视 · 可点 · 所见即所得 · UI/UX 体验层</div>
             </div>
             <div style="font-size:clamp(1.4rem,2.2vw,2rem); opacity:0.2; flex-shrink:0; font-family:var(--font-serif);">◧</div>
           </div>
-
-          <!-- 连接线 -->
-          <div style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4em;
-            background: var(--bg-warm);
-            border-left: 1px solid var(--rule);
-            border-right: 1px solid var(--rule);
-            padding: 0.2em 0.5em;
-          ">
+          <div style="display:flex; align-items:center; background:var(--bg-warm); border-left:1px solid var(--rule); border-right:1px solid var(--rule); padding:0.18em 0.5em; gap:0.4em;">
             <div style="flex:1; height:1px; background:var(--rule);"></div>
             <span style="font-size:var(--caption-size); color:var(--crimson); opacity:0.6; letter-spacing:0.1em; white-space:nowrap;">⇅ 相互驱动，各司其职</span>
             <div style="flex:1; height:1px; background:var(--rule);"></div>
           </div>
-
-          <!-- 后端层 = PRD -->
-          <div style="
-            background: rgba(196,30,58,0.04);
-            border: 1px solid rgba(196,30,58,0.25);
-            border-radius: 0 0 3px 3px;
-            padding: clamp(0.35rem,0.9vh,0.6rem) clamp(0.5rem,1vw,0.8rem);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.8em;
-          ">
+          <div style="background:rgba(196,30,58,0.04); border:1px solid rgba(196,30,58,0.25); border-radius:0 0 3px 3px; padding:clamp(0.3rem,0.7vh,0.5rem) clamp(0.5rem,1vw,0.8rem); display:flex; justify-content:space-between; align-items:center; gap:0.8em;">
             <div style="flex:1;">
-              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--crimson); margin-bottom:0.15em;">后端</div>
+              <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--crimson); margin-bottom:0.1em;">后端</div>
               <div style="font-size:var(--body-size); font-weight:600; color:var(--ink);"><s style="opacity:0.4; font-weight:400;">PRD</s> BRD <span style="font-size:var(--small-size); font-weight:400; color:var(--ink-muted);">后端需求文档</span></div>
-              <div style="font-size:var(--small-size); color:var(--ink-muted); margin-top:0.1em;">业务规则 · 异常流转 · 并发处理 · 算法逻辑</div>
+              <div style="font-size:var(--small-size); color:var(--ink-muted); margin-top:0.08em;">业务规则 · 异常流转 · 并发处理 · 算法逻辑</div>
             </div>
             <div style="font-size:clamp(1.4rem,2.2vw,2rem); opacity:0.2; flex-shrink:0; font-family:var(--font-serif);">⚙</div>
           </div>
-
-          <p style="font-size:var(--small-size); color:var(--ink-faint); font-style:italic; margin-top:0.35em; line-height:1.4;">凡能在原型演示的，就不在文档废话。</p>
+          <p style="font-size:var(--small-size); color:var(--ink-faint); font-style:italic; margin-top:0.3em; line-height:1.4;">凡能在原型演示的，就不在文档废话。</p>
         </div>
-
-        <!-- Podcast screenshot -->
-        <a href="https://newsletter.pragmaticengineer.com/p/building-claude-code-with-boris-cherny"
-           target="_blank" style="display:block; text-decoration:none; margin-top:var(--elem-gap);">
-          <img
-            src="pragmatic-engineer-podcast.png"
-            alt="Building Claude Code with Boris Cherny — The Pragmatic Engineer"
-            style="
-              width: 100%;
-              height: auto;
-              display: block;
-              border: 1px solid var(--rule);
-              border-radius: 3px;
-              opacity: 0.88;
-            "
-          >
-          <p style="font-size:var(--caption-size); color:var(--ink-faint); font-style:italic; text-align:right; margin-top:0.2em;">
-            Building Claude Code with Boris Cherny · The Pragmatic Engineer ↗
-          </p>
-        </a>
 
       </div>
     </div>
@@ -2380,6 +2453,26 @@
         </div>
       </div>
     </div>
+
+    <!-- 官网截图 — 左右并排 -->
+    <div class="reveal d5" style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(0.6rem,1.5vw,1.2rem); margin-top:clamp(0.4rem,1.2vh,0.8rem); flex-shrink:0;">
+      <div style="display:flex; flex-direction:column; gap:0.25em;">
+        <img
+          src="ux-official-1.png"
+          alt="官网 UX 截图 1"
+          style="width:100%; height:auto; display:block; border:1px solid var(--rule); border-radius:2px;"
+        >
+        <p style="font-size:var(--caption-size); color:var(--ink-faint); font-style:italic; text-align:right;">官网设计参考 · 1</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:0.25em;">
+        <img
+          src="ux-official-2.png"
+          alt="官网 UX 截图 2"
+          style="width:100%; height:auto; display:block; border:1px solid var(--rule); border-radius:2px;"
+        >
+        <p style="font-size:var(--caption-size); color:var(--ink-faint); font-style:italic; text-align:right;">官网设计参考 · 2</p>
+      </div>
+    </div>
   </div>
 
   <div class="page-num">— X —</div>
@@ -2423,40 +2516,101 @@
     <h2 class="slide-h2 reveal d2">告别排版焦虑，<em>专注结构化</em>表达</h2>
     <div class="wide-rule reveal d3"></div>
 
-    <div class="ppt-flow reveal d4">
-      <div class="ppt-step">
-        <div class="ppt-step-num">1</div>
-        <div class="ppt-step-body">
-          <div class="ppt-step-title">骨架搭建</div>
-          <div class="ppt-step-text">利用 <strong>Gemini</strong> 构思精细大纲，强制按页规划主旨和视觉元素，结构先行</div>
-        </div>
+    <!-- 流程横条 -->
+    <div class="reveal d4" style="display:flex; align-items:stretch; gap:0; margin-bottom:clamp(0.5rem,1.2vh,0.9rem); border:1px solid var(--rule); border-radius:3px; overflow:hidden; background:var(--bg-warm);">
+      <div style="display:flex; align-items:center; gap:0.5em; padding:clamp(0.3rem,0.8vh,0.55rem) clamp(0.6rem,1.2vw,0.9rem); background:var(--crimson-faint); border-right:1px solid rgba(196,30,58,0.2); flex-shrink:0;">
+        <span style="font-family:var(--font-serif); font-size:clamp(0.65rem,1vw,0.8rem); color:var(--crimson); opacity:0.7;">①</span>
+        <span style="font-family:var(--font-body); font-size:clamp(0.65rem,1vw,0.78rem); font-weight:600; color:var(--ink); white-space:nowrap;"><strong>Gemini</strong> 构思大纲</span>
+        <span style="font-family:var(--font-body); font-size:clamp(0.55rem,0.85vw,0.68rem); color:var(--ink-muted); white-space:nowrap;">强制按页规划主旨与视觉</span>
       </div>
-      <div class="ppt-step">
-        <div class="ppt-step-num">2</div>
-        <div class="ppt-step-body">
-          <div class="ppt-step-title">工具二选一：按场景匹配</div>
-          <div class="tool-branches">
-            <div class="tool-branch primary">
-              <div class="tb-label">日常高频汇报</div>
-              <div class="tb-name">Kimi Slides</div>
-              <div class="tb-desc">中文排版极佳，支持富文本直接编辑，二次调整毫无压力</div>
-            </div>
-            <div class="tool-branch">
-              <div class="tb-label">大型宣讲 / 极客风</div>
-              <div class="tb-name">frontend-slides</div>
-              <div class="tb-desc">输出酷炫动画 HTML 网页幻灯片，极具感染力（有代码门槛）</div>
-            </div>
+      <div style="display:flex; align-items:center; padding:0 clamp(0.5rem,1vw,0.8rem); color:var(--rule); font-size:1.1rem; flex-shrink:0;">→</div>
+      <div style="display:flex; align-items:center; gap:0.5em; padding:clamp(0.3rem,0.8vh,0.55rem) clamp(0.6rem,1.2vw,0.9rem); border-right:1px solid var(--rule); flex:1;">
+        <span style="font-family:var(--font-serif); font-size:clamp(0.65rem,1vw,0.8rem); color:var(--ink-muted); opacity:0.7;">②</span>
+        <span style="font-family:var(--font-body); font-size:clamp(0.65rem,1vw,0.78rem); font-weight:600; color:var(--ink); white-space:nowrap;">按场景选工具生成 PPT</span>
+        <span style="font-family:var(--font-body); font-size:clamp(0.55rem,0.85vw,0.68rem); color:var(--ink-muted);">↓ 见下方对比</span>
+      </div>
+      <div style="display:flex; align-items:center; padding:0 clamp(0.5rem,1vw,0.8rem); color:var(--rule); font-size:1.1rem; flex-shrink:0;">→</div>
+      <div style="display:flex; align-items:center; gap:0.5em; padding:clamp(0.3rem,0.8vh,0.55rem) clamp(0.6rem,1.2vw,0.9rem); flex-shrink:0;">
+        <span style="font-family:var(--font-serif); font-size:clamp(0.65rem,1vw,0.8rem); color:var(--ink-muted); opacity:0.7;">③</span>
+        <span style="font-family:var(--font-body); font-size:clamp(0.65rem,1vw,0.78rem); font-weight:600; color:var(--ink); white-space:nowrap;">逐字稿 & 听众定制</span>
+        <span style="font-family:var(--font-body); font-size:clamp(0.55rem,0.85vw,0.68rem); color:var(--ink-muted); white-space:nowrap;">按老板 / 技术分版本</span>
+      </div>
+    </div>
+
+    <!-- 工具对比 -->
+    <div class="reveal d5" style="display:grid; grid-template-columns:1fr 1fr; gap:clamp(0.6rem,1.5vw,1.2rem); flex:1; min-height:0;">
+
+      <!-- Kimi Slides -->
+      <div style="display:flex; flex-direction:column; gap:0; border:1px solid rgba(196,30,58,0.25); border-top:2px solid var(--crimson); border-radius:0 0 3px 3px; background:var(--bg-warm); overflow:hidden;">
+        <div style="padding:clamp(0.3rem,0.7vh,0.5rem) clamp(0.5rem,1vw,0.8rem); border-bottom:1px solid var(--rule); background:var(--crimson-faint);">
+          <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--crimson); margin-bottom:0.1em;">日常高频汇报</div>
+          <div style="font-size:var(--body-size); font-weight:600; color:var(--ink);">Kimi Slides</div>
+        </div>
+        <!-- Screenshot -->
+        <a href="https://kimi.moonshot.cn" target="_blank" style="display:block; text-decoration:none; flex-shrink:0;">
+          <img src="kimi-slides.png" alt="Kimi Slides 界面" style="width:100%; max-height:min(28vh,220px); object-fit:contain; object-position:top; display:block; opacity:0.92; background:#f5f3ef;">
+        </a>
+        <div style="padding:clamp(0.3rem,0.7vh,0.5rem) clamp(0.5rem,1vw,0.8rem); display:flex; flex-direction:column; gap:0.3em; flex:1;">
+          <div>
+            <div style="font-size:var(--caption-size); color:var(--sage); font-weight:600; letter-spacing:0.1em; margin-bottom:0.2em;">✅ 优势</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:0.15em;">
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--sage); flex-shrink:0;">·</span>中文排版极佳，生成质量高</li>
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--sage); flex-shrink:0;">·</span>输出 <strong>PPTX 格式</strong>，随时拖拽编辑</li>
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--sage); flex-shrink:0;">·</span>图片、Logo 可直接插入，零门槛</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:var(--caption-size); color:var(--crimson); font-weight:600; letter-spacing:0.1em; margin-bottom:0.2em; opacity:0.8;">❌ 劣势</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:0.15em;">
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--crimson); opacity:0.5; flex-shrink:0;">·</span>视觉风格相对通用，难以差异化</li>
+            </ul>
           </div>
         </div>
       </div>
-      <div class="ppt-step">
-        <div class="ppt-step-num">3</div>
-        <div class="ppt-step-body">
-          <div class="ppt-step-title">高阶玩法</div>
-          <div class="ppt-step-text">让 AI 根据<strong>不同听众</strong>（老板看结果 / 技术看逻辑）定制每页的演讲逐字稿</div>
+
+      <!-- frontend-slides -->
+      <div style="display:flex; flex-direction:column; gap:0; border:1px solid rgba(74,122,90,0.3); border-top:2px solid var(--sage); border-radius:0 0 3px 3px; background:var(--bg-warm); overflow:hidden;">
+        <div style="padding:clamp(0.3rem,0.7vh,0.5rem) clamp(0.5rem,1vw,0.8rem); border-bottom:1px solid var(--rule); background:rgba(74,122,90,0.07);">
+          <div style="font-size:var(--caption-size); letter-spacing:0.15em; text-transform:uppercase; color:var(--sage); margin-bottom:0.1em;">大型宣讲 / 极客风</div>
+          <div style="display:flex; align-items:baseline; gap:0.5em;">
+            <div style="font-size:var(--body-size); font-weight:600; color:var(--ink);">frontend-slides</div>
+            <a href="https://github.com/zarazhangrui/frontend-slides" target="_blank" style="font-size:var(--caption-size); color:var(--sage); text-decoration:none; opacity:0.7; white-space:nowrap;">↗ GitHub</a>
+          </div>
+        </div>
+        <!-- Placeholder visual -->
+        <div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); display:flex; align-items:center; justify-content:center; flex-shrink:0; height:min(16vh,120px); gap:0.5em;">
+          <span style="font-family:var(--font-serif); font-size:clamp(0.9rem,1.6vw,1.3rem); color:#e8d5b7; letter-spacing:0.08em;">Paper &amp; Ink</span>
+          <span style="color:rgba(232,213,183,0.3);">·</span>
+          <span style="font-family:var(--font-serif); font-size:clamp(0.75rem,1.2vw,1rem); color:rgba(232,213,183,0.6); letter-spacing:0.06em; font-style:italic;">就是本 PPT 的风格</span>
+        </div>
+        <div style="padding:clamp(0.3rem,0.7vh,0.5rem) clamp(0.5rem,1vw,0.8rem); display:flex; flex-direction:column; gap:0.3em; flex:1;">
+          <div>
+            <div style="font-size:var(--caption-size); color:var(--sage); font-weight:600; letter-spacing:0.1em; margin-bottom:0.2em;">✅ 优势</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:0.15em;">
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--sage); flex-shrink:0;">·</span>动画效果精美，视觉冲击力强</li>
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--sage); flex-shrink:0;">·</span>单 HTML 文件，永久有效，零依赖</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-size:var(--caption-size); color:var(--crimson); font-weight:600; letter-spacing:0.1em; margin-bottom:0.2em; opacity:0.8;">❌ 劣势</div>
+            <ul style="list-style:none; display:flex; flex-direction:column; gap:0.15em;">
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--crimson); opacity:0.5; flex-shrink:0;">·</span>输出 <strong>HTML</strong>，调整需对话/代码，无法拖拽</li>
+              <li style="font-family:var(--font-body); font-size:clamp(0.6rem,0.9vw,0.72rem); color:var(--ink-soft); line-height:1.4; display:flex; gap:0.35em;"><span style="color:var(--crimson); opacity:0.5; flex-shrink:0;">·</span>插图需放同目录再在代码中引用，无法直接上传</li>
+            </ul>
+          </div>
         </div>
       </div>
+
     </div>
+
+    <!-- 共同局限 -->
+    <div class="reveal d6" style="margin-top:clamp(0.4rem,1vh,0.7rem);">
+      <div style="border:1px solid var(--rule); border-left:3px solid var(--amber); border-radius:0 2px 2px 0; background:rgba(212,160,23,0.04); padding:clamp(0.3rem,0.8vh,0.55rem) clamp(0.6rem,1.2vw,0.9rem);">
+        <div style="font-size:var(--caption-size); letter-spacing:0.2em; text-transform:uppercase; color:var(--amber); margin-bottom:0.25em;">两者共同局限</div>
+        <p style="font-family:var(--font-body); font-size:clamp(0.62rem,0.95vw,0.76rem); color:var(--ink-soft); line-height:1.5;"><strong>均无法参考历史 PPT 生成新作品</strong>——理想状态：上传以往 PPT → AI 学习版式风格 + 品牌元素（Logo、配色、字体）→ 输入需求 → 自动生成<em>风格一致、自带公司 Logo</em> 的新 PPT。目前尚未有工具能做到。</p>
+      </div>
+    </div>
+
   </div>
 
   <div class="page-num">— XII —</div>
@@ -2464,38 +2618,9 @@
 
 
 <!-- ================================================
-     SLIDE XIII · AI 排版的盲区
-     ================================================ -->
-<section class="slide" data-slide="12" aria-label="AI排版盲区">
-  <div class="section-mark reveal-fade">
-    <div class="num">13</div>
-  </div>
-
-  <div class="slide-content">
-    <div class="eyebrow reveal d1">步骤四 · AI 的盲区</div>
-    <h2 class="slide-h2 reveal d2">为什么 AI 生成的 PPT<em>"没有灵魂"</em>？</h2>
-    <div class="wide-rule reveal d3"></div>
-
-    <ul class="feature-list reveal d4">
-      <li><strong>无法继承历史资产：</strong>主流 AI 工具无法通过"喂"以往历史 PPT 文件，深度学习并完美复刻公司专属排版风格</li>
-      <li><strong>缺乏企业组件库生态：</strong>AI 工具里没有地方存放和调用公司专属 PPT 组件元素（特定品牌图形、标准架构图模板、规范化 Icon 库）</li>
-      <li><strong>流水线式同质化：</strong>由于上述两点，AI 自动生成的视觉效果往往通用而标准，缺乏契合企业独特调性与具体业务场景的定制化"灵魂"</li>
-    </ul>
-
-    <div class="pull-quote reveal d5">
-      <span class="q-mark">"</span>
-      <p>AI 是优秀的排版<em>执行工具</em>，但企业独特的视觉语言与品牌调性，仍需人类设计师去定义和沉淀。</p>
-    </div>
-  </div>
-
-  <div class="page-num">— XIII —</div>
-</section>
-
-
-<!-- ================================================
      SLIDE XIV · 章节过渡页 — 尾声
      ================================================ -->
-<section class="slide chapter-slide" data-slide="13" aria-label="尾声">
+<section class="slide chapter-slide" data-slide="12" aria-label="尾声">
   <div class="slide-content">
     <div class="chapter-bg-num reveal-fade d1" aria-hidden="true" style="letter-spacing: -0.06em;">END</div>
     <div class="chapter-label reveal d2">尾声 · 经验沉淀</div>
@@ -2503,14 +2628,14 @@
     <h2 class="chapter-title reveal d4">生存法则 · <em>PM 避坑指南</em></h2>
     <p class="chapter-desc reveal d5">沉淀 AI 使用规范，守住职业底线</p>
   </div>
-  <div class="page-num">— XIV —</div>
+  <div class="page-num">— XIII —</div>
 </section>
 
 
 <!-- ================================================
-     SLIDE XV · PM 避坑指南
+     SLIDE XIV · PM 避坑指南
      ================================================ -->
-<section class="slide" data-slide="14" aria-label="PM避坑指南">
+<section class="slide" data-slide="13" aria-label="PM避坑指南">
   <div class="cross" style="top: clamp(3rem,7vh,5rem); left: var(--slide-pad-x)"></div>
 
   <div class="section-mark reveal-fade">
@@ -2524,42 +2649,103 @@
 
   <div class="slide-content">
     <div class="eyebrow reveal d1">AI 时代 · 生存法则</div>
-    <h2 class="slide-h2 reveal d2"><em>三条</em>黄金法则</h2>
+    <h2 class="slide-h2 reveal d2">产品人的 <em>五条</em> 生存法则</h2>
     <div class="wide-rule reveal d3"></div>
 
-    <ul class="rules-list reveal d4">
-      <li class="rule-item">
-        <div class="rule-icon">I</div>
-        <div class="rule-body">
-          <div class="rule-title">你是决策者，AI 是副驾驶</div>
-          <div class="rule-text">坚决不做"甩手掌柜"，必须人工复核关键逻辑，为最终结果负责。AI 输出再好，也需要 PM 的判断来兜底。</div>
+    <!-- 五条法则：6列网格，I/II/III 各占2列，IV/V 各占3列，两行等高 -->
+    <div class="reveal d4" style="display:grid; grid-template-columns:repeat(6,1fr); grid-template-rows:1fr 1fr; gap:clamp(0.5rem,1.2vw,0.9rem); flex:1; min-height:0;">
+
+      <!-- I -->
+      <div style="grid-column:span 2; border:1px solid var(--rule); border-top:3px solid var(--amber); padding:clamp(0.6rem,1.5vh,1.1rem) clamp(0.6rem,1.5vw,1.1rem); background:var(--bg-warm); display:flex; flex-direction:column; gap:clamp(0.4rem,1vh,0.8rem);">
+        <div style="display:flex; align-items:baseline; gap:0.4em;">
+          <span style="font-family:var(--font-serif); font-size:clamp(1.2rem,2.2vw,1.8rem); color:var(--amber); opacity:0.35; font-weight:300; flex-shrink:0;">I</span>
+          <span style="font-size:clamp(0.9rem,1.35vw,1.1rem); font-weight:700; color:var(--ink);">你是决策者，AI 是副驾驶</span>
         </div>
-      </li>
-      <li class="rule-item">
-        <div class="rule-icon">II</div>
-        <div class="rule-body">
-          <div class="rule-title">掌握 Prompt 公式</div>
-          <div class="rule-text"><strong>角色设定 + 背景信息 + 具体任务 + 输出要求</strong>——利用大模型长期记忆功能可逐渐固化前两项，大幅提升效率。</div>
+        <p style="font-family:var(--font-body); font-size:clamp(0.78rem,1.15vw,0.95rem); color:var(--ink-soft); line-height:1.6; flex:1;"><strong>对不对、好不好，只有你能判断。</strong>产品逻辑的自洽性、数据合理性、用户场景还原度——这些都不能外包给 AI。保持审辨力，为最终决策<em>全程负责</em>。</p>
+      </div>
+
+      <!-- II -->
+      <div style="grid-column:span 2; border:1px solid var(--rule); border-top:3px solid var(--amber); padding:clamp(0.6rem,1.5vh,1.1rem) clamp(0.6rem,1.5vw,1.1rem); background:var(--bg-warm); display:flex; flex-direction:column; gap:clamp(0.4rem,1vh,0.8rem);">
+        <div style="display:flex; align-items:baseline; gap:0.4em;">
+          <span style="font-family:var(--font-serif); font-size:clamp(1.2rem,2.2vw,1.8rem); color:var(--amber); opacity:0.35; font-weight:300; flex-shrink:0;">II</span>
+          <span style="font-size:clamp(0.9rem,1.35vw,1.1rem); font-weight:700; color:var(--ink);">掌握 Prompt 公式</span>
         </div>
-      </li>
-      <li class="rule-item">
-        <div class="rule-icon">III</div>
-        <div class="rule-body">
-          <div class="rule-title">死守数据红线</div>
-          <div class="rule-text">严禁将核心业务机密、未脱敏的用户隐私数据（PII）输入公共大模型。合规先于效率，底线不可逾越。</div>
+        <div style="display:flex; gap:0.3em; flex-wrap:wrap; align-items:center;">
+          <span style="font-family:var(--font-body); font-size:clamp(0.7rem,1vw,0.84rem); background:rgba(156,109,48,0.12); border:1px solid rgba(156,109,48,0.25); padding:0.18em 0.5em; border-radius:2px; color:var(--amber); font-weight:600;">角色设定</span>
+          <span style="color:var(--rule); font-size:0.9em;">+</span>
+          <span style="font-family:var(--font-body); font-size:clamp(0.7rem,1vw,0.84rem); background:rgba(156,109,48,0.12); border:1px solid rgba(156,109,48,0.25); padding:0.18em 0.5em; border-radius:2px; color:var(--amber); font-weight:600;">背景信息</span>
+          <span style="color:var(--rule); font-size:0.9em;">+</span>
+          <span style="font-family:var(--font-body); font-size:clamp(0.7rem,1vw,0.84rem); background:rgba(156,109,48,0.12); border:1px solid rgba(156,109,48,0.25); padding:0.18em 0.5em; border-radius:2px; color:var(--amber); font-weight:600;">具体任务</span>
+          <span style="color:var(--rule); font-size:0.9em;">+</span>
+          <span style="font-family:var(--font-body); font-size:clamp(0.7rem,1vw,0.84rem); background:rgba(156,109,48,0.12); border:1px solid rgba(156,109,48,0.25); padding:0.18em 0.5em; border-radius:2px; color:var(--amber); font-weight:600;">输出要求</span>
         </div>
-      </li>
-    </ul>
+        <p style="font-family:var(--font-body); font-size:clamp(0.78rem,1.15vw,0.95rem); color:var(--ink-soft); line-height:1.6; flex:1;">前两项可借助记忆功能<strong>一次设置、永久生效</strong>。上下文越充分，输出越高质量——好的 Prompt 本身就是<em>产品思维</em>的体现。</p>
+      </div>
+
+      <!-- III -->
+      <div style="grid-column:span 2; border:1px solid rgba(74,98,156,0.25); border-top:3px solid #4a629c; padding:clamp(0.6rem,1.5vh,1.1rem) clamp(0.6rem,1.5vw,1.1rem); background:rgba(74,98,156,0.04); display:flex; flex-direction:column; gap:clamp(0.4rem,1vh,0.8rem);">
+        <div style="display:flex; align-items:baseline; gap:0.4em;">
+          <span style="font-family:var(--font-serif); font-size:clamp(1.2rem,2.2vw,1.8rem); color:#4a629c; opacity:0.35; font-weight:300; flex-shrink:0;">III</span>
+          <span style="font-size:clamp(0.9rem,1.35vw,1.1rem); font-weight:700; color:var(--ink);">重复三次，就该 AI 化</span>
+        </div>
+        <div style="display:flex; gap:0.4em; align-items:center;">
+          <span style="font-size:clamp(1.1rem,1.8vw,1.4rem);">🔁</span>
+          <span style="font-size:clamp(1.1rem,1.8vw,1.4rem);">🔁</span>
+          <span style="font-size:clamp(1.1rem,1.8vw,1.4rem);">🔁</span>
+          <span style="font-family:var(--font-body); font-size:clamp(0.75rem,1.1vw,0.9rem); color:#4a629c; font-weight:700; margin-left:0.2em;">→ 让 AI 接管</span>
+        </div>
+        <p style="font-family:var(--font-body); font-size:clamp(0.78rem,1.15vw,0.95rem); color:var(--ink-soft); line-height:1.6; flex:1;">初期可能费时费力，但一旦跑通，<strong>长期收益远超前期投入</strong>。把重复性工作交给 AI，把注意力留给<em>真正需要人判断</em>的事。</p>
+      </div>
+
+      <!-- IV -->
+      <div style="grid-column:span 3; border:1px solid rgba(74,122,90,0.35); border-top:3px solid var(--sage); background:var(--sage-faint); padding:clamp(0.6rem,1.5vh,1.1rem) clamp(0.7rem,1.8vw,1.3rem); display:flex; flex-direction:column; gap:clamp(0.4rem,1vh,0.8rem);">
+        <div style="display:flex; align-items:baseline; gap:0.5em;">
+          <span style="font-family:var(--font-serif); font-size:clamp(1.2rem,2.2vw,1.8rem); color:var(--sage); opacity:0.45; font-weight:300; flex-shrink:0;">IV</span>
+          <span style="font-size:clamp(0.92rem,1.38vw,1.12rem); font-weight:700; color:var(--ink);">从执行者 → 审查者</span>
+        </div>
+        <div style="display:flex; gap:0; align-items:stretch; height:clamp(2.2rem,4vh,3.2rem); border-radius:3px; overflow:hidden;">
+          <div style="flex:3; background:var(--sage); display:flex; align-items:center; justify-content:center; gap:0.6em;">
+            <span style="font-family:var(--font-body); font-size:clamp(0.8rem,1.15vw,0.95rem); color:#fff; font-weight:700; letter-spacing:0.04em;">审查者</span>
+            <span style="font-family:var(--font-body); font-size:clamp(0.7rem,1vw,0.82rem); color:rgba(255,255,255,0.75);">趋势持续↑</span>
+          </div>
+          <div style="flex:2; background:rgba(74,122,90,0.18); display:flex; align-items:center; justify-content:center;">
+            <span style="font-family:var(--font-body); font-size:clamp(0.8rem,1.15vw,0.95rem); color:var(--sage); font-weight:500;">构建者</span>
+          </div>
+        </div>
+        <p style="font-family:var(--font-body); font-size:clamp(0.78rem,1.15vw,0.95rem); color:var(--ink-soft); line-height:1.6; flex:1;">AI 快速生成原型和需求文档后，<strong>PM 的核心价值转移到审查质量</strong>——看出交互逻辑是否自洽，需求是否覆盖边界场景，AI 是否真正理解了用户意图。<em>这才是不可替代的能力。</em></p>
+      </div>
+
+      <!-- V -->
+      <div style="grid-column:span 3; border:1px solid rgba(196,30,58,0.2); border-top:3px solid var(--crimson); background:var(--crimson-faint); padding:clamp(0.6rem,1.5vh,1.1rem) clamp(0.7rem,1.8vw,1.3rem); display:flex; flex-direction:column; gap:clamp(0.4rem,1vh,0.8rem);">
+        <div style="display:flex; align-items:baseline; gap:0.5em;">
+          <span style="font-family:var(--font-serif); font-size:clamp(1.2rem,2.2vw,1.8rem); color:var(--crimson); opacity:0.35; font-weight:300; flex-shrink:0;">V</span>
+          <span style="font-size:clamp(0.92rem,1.38vw,1.12rem); font-weight:700; color:var(--ink);">跨界融合：产品与研发界限模糊</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:0.6em;">
+          <div style="background:rgba(196,30,58,0.08); border:1px solid rgba(196,30,58,0.2); border-radius:3px; padding:0.5em 0.6em; text-align:center;">
+            <div style="font-size:clamp(0.8rem,1.15vw,0.95rem); font-weight:700; color:var(--crimson);">产品经理</div>
+            <div style="font-size:clamp(0.68rem,0.98vw,0.8rem); color:var(--ink-muted); margin-top:0.2em; line-height:1.4;">学会 review 代码<br>验证 vibe coding 质量</div>
+          </div>
+          <div style="font-size:clamp(1.4rem,2.4vw,2rem); color:rgba(196,30,58,0.22); line-height:1;">⇄</div>
+          <div style="background:rgba(196,30,58,0.08); border:1px solid rgba(196,30,58,0.2); border-radius:3px; padding:0.5em 0.6em; text-align:center;">
+            <div style="font-size:clamp(0.8rem,1.15vw,0.95rem); font-weight:700; color:var(--crimson);">研发工程师</div>
+            <div style="font-size:clamp(0.68rem,0.98vw,0.8rem); color:var(--ink-muted); margin-top:0.2em; line-height:1.4;">转变为用户/需求视角<br>从市场与商业角度思考</div>
+          </div>
+        </div>
+        <p style="font-family:var(--font-body); font-size:clamp(0.78rem,1.15vw,0.95rem); color:var(--ink-soft); line-height:1.6; flex:1;"><strong>主动拥抱对方领域的人</strong>，将成为 AI 时代最稀缺的复合型人才。PM 借助 AI 写代码，还是研发借助 AI 做产品设计更容易？——悬而未决，但<em>先动手的人赢</em>。</p>
+      </div>
+
+    </div>
   </div>
 
-  <div class="page-num">— XV —</div>
+  <div class="page-num">— XIV —</div>
 </section>
 
 
 <!-- ================================================
-     SLIDE XVI · Q&A
+     SLIDE XV · Q&A
      ================================================ -->
-<section class="slide qa-slide" data-slide="15" aria-label="Q&A">
+<section class="slide qa-slide" data-slide="14" aria-label="Q&A">
   <div class="cross" style="top: clamp(2.5rem,7vh,5rem); left: var(--slide-pad-x)"></div>
   <div class="cross" style="bottom: clamp(2.5rem,7vh,5rem); right: var(--slide-pad-x)"></div>
 
@@ -2581,7 +2767,7 @@
     <p class="qa-footer reveal d5">AI 赋能产品经理 · 工作流重塑与实践 · 2026</p>
   </div>
 
-  <div class="page-num">— XVI —</div>
+  <div class="page-num">— XV —</div>
 </section>
 
 
